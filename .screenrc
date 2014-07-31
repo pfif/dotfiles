@@ -1,0 +1,10 @@
+#Creation of the windows
+screen -t "Workspace" 1
+screen -t "Instant Messaging" -M 7 mcabber
+screen -t "Music" 8 cmus
+screen -t "Mixer" 9 alsamixer
+
+#Moving the Workspace to the workspace
+at 1 cd ~/Workspace
+
+select 7
