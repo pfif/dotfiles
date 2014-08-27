@@ -1,0 +1,7 @@
+This is the info for the last game you ran.
+
+File: Super Mario All-Stars + Super Mario World (USA).zip Header: No
+ALL_STARS + WORLD         TYPE:NORMAL   
+INTERLEAVED:No               CHKSUM:OK  
+VIDEO:NTSC    BANK:Lo     CRC32:F84305B1
+                                        
