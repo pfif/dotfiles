@@ -6,4 +6,4 @@ set relativenumber
 
 map D :syntax on<ENTER>
 map S s<SPACE>
-map m lxi<ENTER>
+map M lxi<ENTER>
