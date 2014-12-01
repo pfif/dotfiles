@@ -13,6 +13,10 @@ set showcmd
 map D :syntax on<ENTER>
 map S s<SPACE>
 map M lxi<ENTER>
+map Q Oimport pdb; pdb.set_trace()<Esc>
+
+map - /^\(class\\|def\)<ENTER>zt
+map _ ?^\(class\\|def\)<ENTER>zt
 
 let mapleader="\<Space>"
 
