@@ -20,7 +20,7 @@ map _ ?^\(class\\|def\)<ENTER>zt
 
 let mapleader="\<Space>"
 
-"Move quicker between tabs
+"Move quicker between windows
 map <Leader>h <c-w>h
 map <Leader>l <c-w>l
 map <Leader>j <c-w>j
