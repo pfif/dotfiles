@@ -1,10 +1,5 @@
-#Creation of the windows
-screen -t "Workspace" 1
-screen -t "Instant Messaging" -M 7 mcabber
-screen -t "Music" 8 cmus
-screen -t "Mixer" 9 alsamixer
+startup_message off
+echo "Connect to network and enter the password to the Ministry of Magic"
+sleep 5
 
-#Moving the Workspace to the workspace
-at 1 cd ~/Workspace
-
-select 7
+bindkey -t 62442 source ~/.screenrc_postconnection

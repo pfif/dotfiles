@@ -1,0 +1,11 @@
+#Creation of the windows
+screen -t "Workspace" 1
+screen -t "Instant Messaging" -M 7
+screen -t "Music" 8 irssi
+screen -t "Mixer" 9 alsamixer
+
+at "7#" stuff "mcabber ^M"
+at "0#" title "Tor"
+at "0#" stuff "tor SOCKSPort 3000^M"
+
+select 7
