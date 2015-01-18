@@ -26,6 +26,10 @@ map <Leader>l <c-w>l
 map <Leader>j <c-w>j
 map <Leader>k <c-w>k
 
+"Move quicker between tabs
+map <Leader>u :tabprevious<ENTER>
+map <Leader>o :tabnext<ENTER>
+
 "Save quicker
 map <Leader>w :w<ENTER>
 
