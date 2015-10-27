@@ -39,3 +39,9 @@ imap jj <Esc>
 "open this file in vim
 tabedit ~/.vimrc
 tabprevious
+
+"highlight the 80th line in black and wrap text before it
+set colorcolumn=80
+hi ColorColumn ctermbg=black
+set tw=79
+set wrap
