@@ -36,5 +36,6 @@ map <Leader>w :w<ENTER>
 "Quit the insert mode quicker
 imap jj <Esc>
 
+"open this file in vim
 tabedit ~/.vimrc
 tabprevious
