@@ -1,0 +1,10 @@
+screen -t "Vim" 1
+screen -t "Bash" 2
+screen -t "PDF" 3
+
+at "1#" stuff "vim document.tex"
+at "3#" stuff "evince document.pdf "
+
+bindkey -t 62442 at "1#" stuff ":!pdflatex document.tex "
+
+select 1

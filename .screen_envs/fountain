@@ -1,0 +1,10 @@
+screen -t "Vim" 1
+screen -t "Bash" 2
+screen -t "PDF" 3
+
+at "1#" stuff "vim script.fountain"
+at "3#" stuff "firefox script.html "
+
+bindkey -t 62442 at "1#" stuff ":!textplay script.fountain > script.html; "
+
+select 1
