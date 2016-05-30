@@ -41,7 +41,7 @@ tabedit ~/.vimrc
 tabprevious
 
 "highlight the 80th line in black and wrap text before it
-set colorcolumn=80
-hi ColorColumn ctermbg=black
-set tw=79
-set wrap
+autocmd BufNewFile,BufRead *.py set colorcolumn=80
+autocmd BufNewFile,BufRead *.py hi ColorColumn ctermbg=black
+autocmd BufNewFile,BufRead *.py set tw=79
+autocmd BufNewFile,BufRead *.py set wrap
