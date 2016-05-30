@@ -5,3 +5,5 @@ alias grs='need_stash=`git status --porcelain` && if [ -n "$need_stash" ]; then 
 
 alias gp="git push origin HEAD"
 alias gpf="gp -f"
+
+alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
