@@ -1,0 +1,1 @@
+scrapy runspider $(dirname "$0")/vocabulary_com_scraper.py -o - -t csv | less
