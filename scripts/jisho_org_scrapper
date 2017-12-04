@@ -1,0 +1,1 @@
+scrapy runspider $(dirname "$0")/jisho_org_scrapper.py -s VOCABULARY_FILE_LOCATION=$1 && less memrise_japanese_vocabulary_hiragana.csv && less memrise_japanese_vocabulary_kanjis.csv
