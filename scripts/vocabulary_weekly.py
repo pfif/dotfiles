@@ -1,19 +1,23 @@
 from collections import defaultdict
 from copy import deepcopy
+from functools import partial
 import csv
 import json
 import webbrowser
 
 PRIORITIES = {"i": 5, "p": 4, "n": 3, "o": 2, "b": 1}
+SAVE_FILE = ".english_vocabulary_state"
+VOCABULARY_FILE = "vocabulary.txt"
 
 
 def write_state_to_file(
+        filename,
         words=None,
         sentences=None):
     if sentences is None:
         sentences = []
 
-    file_ = open(".vocabulary_state", "w")
+    file_ = open(filename, "w")
     state = {
         "words": words,
         "sentences": sentences,
@@ -22,9 +26,9 @@ def write_state_to_file(
     file_.close()
 
 
-def load_state_from_file():
+def load_state_from_file(filename):
     try:
-        file_ = open(".vocabulary_state", "r")
+        file_ = open(filename, "r")
         state = json.load(file_)
     except FileNotFoundError:
         state = defaultdict(lambda: None)
@@ -34,12 +38,15 @@ def load_state_from_file():
     return words, sentences
 
 
-def load_sentence_list():
-    vocabulary_file = open("vocabulary.txt", "r")
+local_write_state = partial(write_state_to_file, SAVE_FILE)
+
+
+def load_sentence_list(vocabulary_file):
+    vocabulary_file = open(vocabulary_file, "r")
     return vocabulary_file.readlines()
 
 
-def select_words_from_sentences(sentences, words=None):
+def select_words_from_sentences(write_state, sentences, words=None):
     sentences = deepcopy(sentences)
     if words is None:
         words = []
@@ -50,7 +57,7 @@ def select_words_from_sentences(sentences, words=None):
         print("%s sentences remaining..." % len(sentences))
         new_words, sentences = select_words_from_sentence(sentences)
         words.extend(new_words)
-        write_state_to_file(words, sentences)
+        write_state(words, sentences)
 
     return words
 
@@ -85,14 +92,14 @@ def select_word(sentence):
 
 
 # Sort words from most important to least important
-def sort_list(words):
+def sort_list(write_state, words):
     words_sorted_and_prioritized = deepcopy(words)
 
     for i, word in enumerate(words_sorted_and_prioritized):
         if "priority" not in word:
             print("\n%s words remaining..." % (len(words) - i))
             word["priority"] = input_word_priority(word)
-            write_state_to_file(words_sorted_and_prioritized)
+            write_state(words_sorted_and_prioritized)
 
     return sort_words_according_to_priority(words_sorted_and_prioritized)
 
@@ -134,9 +141,9 @@ def limit_list(words):
     return words[:50]
 
 
-def hide_words_from_sentences(words):
+def hide_words_from_sentences(write_state, words):
     new_words = list(map(hide_word_from_sentence, words))
-    write_state_to_file(words=new_words)
+    write_state(words=new_words)
     return new_words
 
 
@@ -151,17 +158,17 @@ def hide_word_from_sentence(word):
     return word
 
 
-def input_definition_for_words(words):
+def input_definition_for_words(write_state, words, input_definition_for_word):
     words = deepcopy(words)
     for i, word in enumerate(words):
         if "definition" not in word:
             print("%s words remaining..." % (len(words) - i))
             word["word"], word["definition"] = input_definition_for_word(word)
-            write_state_to_file(words)
+            write_state(words)
     return words
 
 
-def input_definition_for_word(word):
+def input_definition_for_word_english(word):
     word_string = word["word"]
     print(word["sentence"])
     print(word["word"])
@@ -179,15 +186,19 @@ def input_definition_for_word(word):
         elif answer == "g":
             google(word_string)
         elif answer == "d":
-            if len(definitions) > 1:
-                definition_string = " - ".join([
-                    "%s. %s" % (i + 1, definition) for i, definition in enumerate(definitions)
-                ])
-            else:
-                definition_string = definitions[0]
+            definition_string = make_definition_string(definitions)
             print("Definitions : %s" % definition_string)
             print("\n")
             return word_string, definition_string
+
+
+def make_definition_string(definitions):
+    if len(definitions) > 1:
+        return " - ".join([
+            "%s. %s" % (i + 1, definition) for i, definition in enumerate(definitions)
+        ])
+    else:
+        return definitions[0]
 
 
 def export_words_to_csv(words):
@@ -199,14 +210,19 @@ def export_words_to_csv(words):
             writer.writerow(word)
 
 
-words, sentences = load_state_from_file()
+def get_word_and_sentence(save_file, vocabulary_file):
+    words, sentences = load_state_from_file(save_file)
 
-if words is None:
-    sentences = load_sentence_list()
+    if words is None:
+        sentences = load_sentence_list(vocabulary_file)
 
-words = select_words_from_sentences(sentences, words)
-words = sort_list(words)
+    return words, sentences
+
+
+words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
+words = select_words_from_sentences(local_write_state, sentences, words)
+words = sort_list(local_write_state, words)
 words = limit_list(words)
-words = input_definition_for_words(words)
-words = hide_words_from_sentences(words)
+words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
+words = hide_words_from_sentences(local_write_state, words)
 export_words_to_csv(words)
