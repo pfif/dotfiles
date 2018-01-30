@@ -8,6 +8,7 @@ import webbrowser
 PRIORITIES = {"i": 5, "p": 4, "n": 3, "o": 2, "b": 1}
 SAVE_FILE = ".english_vocabulary_state"
 VOCABULARY_FILE = "vocabulary.txt"
+CSV_FILE = "memrise.csv"
 
 
 def write_state_to_file(
@@ -163,7 +164,8 @@ def input_definition_for_words(write_state, words, input_definition_for_word):
     for i, word in enumerate(words):
         if "definition" not in word:
             print("%s words remaining..." % (len(words) - i))
-            word["word"], word["definition"] = input_definition_for_word(word)
+            word["word"], word["definition"], extra_fields = input_definition_for_word(word)
+            word.update(extra_fields)
             write_state(words)
     return words
 
@@ -201,10 +203,15 @@ def make_definition_string(definitions):
         return definitions[0]
 
 
-def export_words_to_csv(words):
+def export_words_to_csv(words, csv_filename, extra_fields=None):
+    if extra_fields is None:
+        extra_fields = []
+    fields = ["word", "definition", "sentence"]
+    fields.update(fields)
+
     print("Exporting to CSV...")
-    with open("memrise.csv", "w", newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, ["word", "definition", "sentence"], extrasaction="ignore")
+    with open(csv_filename, "w", newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fields, extrasaction="ignore")
 
         for word in words:
             writer.writerow(word)
@@ -225,4 +232,4 @@ words = sort_list(local_write_state, words)
 words = limit_list(words)
 words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
 words = hide_words_from_sentences(local_write_state, words)
-export_words_to_csv(words)
+export_words_to_csv(words, CSV_FILE)
