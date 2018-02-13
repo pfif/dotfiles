@@ -88,12 +88,18 @@ def select_words_from_sentence(sentences):
 
 
 def select_word(sentence):
+    words = sentence.split(" ")
+    enumerated_words = ["%s. %s" % (i, word) for i, word in enumerate(words)]
+    print("\n".join(enumerated_words))
+
     while True:
-        word = input("please input a word : ")
-        if word not in sentence:
-            print("word not in sentence")
-        else:
-            return word
+        raw_index = input("please input the numbers for the words you wish to select : ")
+        selected_index = [int(i) for i in raw_index.split(" ")]
+        selected_words = " ".join([words[index] for index in selected_index])
+
+        confirm = input("'%s', is that correct? (y/n)" % selected_words)
+        if confirm == "y":
+            return selected_words
 
 
 def categorize_list(write_state, words):
