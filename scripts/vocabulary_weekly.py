@@ -5,6 +5,11 @@ import csv
 import json
 import webbrowser
 
+CATEGORIES = {
+    "u": "unknown",
+    "n": "unused",
+    "p": "proper"  # as in proper noun
+}
 PRIORITIES = {"i": 5, "p": 4, "n": 3, "o": 2, "b": 1}
 SAVE_FILE = ".english_vocabulary_state"
 VOCABULARY_FILE = "vocabulary.txt"
@@ -91,6 +96,29 @@ def select_word(sentence):
             return word
 
 
+def categorize_list(write_state, words):
+    words = deepcopy(words)
+    categories = {category: [] for category in CATEGORIES.values()}
+
+    for i, word in enumerate(words):
+        if "category" not in word:
+            print("\n%s words remaining..." % (len(words) - i))
+            word["category"] = input_word_category(word)
+            write_state(words)
+        categories[word["category"]].append(word)
+
+    return categories["unknown"], categories["unused"], categories["proper"]
+
+
+def input_word_category(word):
+    print(word["sentence"])
+    print("What is the category for the word '%s'" % word["word"])
+    while True:
+        answer = input("(u)nknown, u(n)used, (p)roper : ")
+        if answer in CATEGORIES.keys():
+            return CATEGORIES[answer]
+
+
 # Sort words from most important to least important
 def sort_list(write_state, words):
     words_sorted_and_prioritized = deepcopy(words)
@@ -137,8 +165,15 @@ def sort_words_according_to_priority(words):
     return words_sorted
 
 
-def limit_list(words):
-    return words[:50]
+def combine_and_limit_lists(unknown, unused, proper):
+    unknown, unused, proper = deepcopy(unknown), deepcopy(unused), deepcopy(proper)
+
+    words = []
+    words.extend(unknown[:25])
+    words.extend(unused[:25])
+    words.extend(proper)
+
+    return words
 
 
 def hide_words_from_sentences(write_state, words):
@@ -221,8 +256,13 @@ def get_word_and_sentence(save_file, vocabulary_file):
 
 words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
 words = select_words_from_sentences(local_write_state, sentences, words)
-words = sort_list(local_write_state, words)
-words = limit_list(words)
+
+unknown, unused, proper = categorize_list(words)
+unknown = sort_list(local_write_state, unknown)
+unused = sort_list(local_write_state, unused)
+proper = sort_list(local_write_state, proper)
+
+words = combine_and_limit_lists(unknown, unused, proper)
 words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
 words = hide_words_from_sentences(local_write_state, words)
 export_words_to_csv(words)
