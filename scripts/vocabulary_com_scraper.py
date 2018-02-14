@@ -29,7 +29,5 @@ class VocabularyCom(scrapy.Spider):
             yield OrderedDict([
                 ("Word", words.css("span.word::text").extract_first()),
                 ("Definition", words.css("dfn::text").extract_first()),
-                ("Pronunciation", ""),
-                ("Part of Speech", ""),
-                ("Gender", "")
+                ("Example", ""),
             ])

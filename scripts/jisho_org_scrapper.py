@@ -1,19 +1,14 @@
-from csv import DictReader, DictWriter
+from collections import OrderedDict
+from csv import DictReader
 from urllib.parse import unquote
 import re
 
-from scrapy.exporters import BaseItemExporter
 from scrapy.http import Request
 import scrapy
 
 
 class JishoOrgWordSpider(scrapy.Spider):
     name = "JishoOrgSpider"
-    custom_settings = {
-        "ITEM_PIPELINES": {
-            "jisho_org_scrapper.MemriseJapaneseVocabularyExporterPipeline": 100
-        }
-    }
 
     def start_requests(self):
         with open(self.settings.get("VOCABULARY_FILE_LOCATION")) as vocabulary_file:
@@ -44,61 +39,8 @@ class JishoOrgWordSpider(scrapy.Spider):
 
             word_in_hiragana = "".join(furigana_and_kanji_mixed_characters)
 
-        return {
-            "definition": definition,
-            "word_in_kanjis": word_in_kanjis,
-            "word_in_hiragana": word_in_hiragana
-        }
-
-
-class MemriseJapaneseVocabularyExporterPipeline(object):
-    def open_spider(self, spider):
-        self.exporter = MemriseJapaneseVocabularyExporter()
-        self.exporter.start_exporting()
-
-    def process_item(self, item, spider):
-        self.exporter.export_item(item)
-
-    def close_spider(self, spider):
-        self.exporter.finish_exporting()
-
-
-class MemriseJapaneseVocabularyExporter(BaseItemExporter):
-    def start_exporting(self):
-        self.kanji_file = open("memrise_japanese_vocabulary_kanjis.csv", "w")
-        self.hiragana_file = open("memrise_japanese_vocabulary_hiragana.csv", "w")
-
-        csv_fields = [
-            "Kana",
-            "English",
-            "Common Japanese",
-            "Kanji",
-            "Part of Speech",
-            "Gender"
-        ]
-        self.kanji_csvdictwriter = DictWriter(self.kanji_file, csv_fields)
-        self.hiragana_csvdictwriter = DictWriter(self.hiragana_file, csv_fields)
-
-    def export_item(self, item):
-        self.kanji_csvdictwriter.writerow({
-            "Kana": item["word_in_kanjis"],
-            "English": item["definition"],
-            "Common Japanese": "",
-            "Kanji": item["word_in_hiragana"] if item["word_in_hiragana"] else "",
-            "Part of Speech": "",
-            "Gender": "",
-        })
-
-        if item["word_in_hiragana"]:
-            self.hiragana_csvdictwriter.writerow({
-                "Kana": item["word_in_hiragana"],
-                "English": item["definition"],
-                "Common Japanese": "",
-                "Kanji": item["word_in_kanjis"],
-                "Part of Speech": "",
-                "Gender": "",
-            })
-
-    def finish_exporting(self):
-        self.kanji_file.close()
-        self.hiragana_file.close()
+        return OrderedDict([
+            ("Furigana", word_in_hiragana),
+            ("English", definition),
+            ("Kanji", word_in_kanjis),
+        ])
