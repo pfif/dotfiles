@@ -103,18 +103,23 @@ def select_word(sentence):
             return selected_words
 
 
-def categorize_list(write_state, words):
+def input_category_list(write_state, words):
     words = deepcopy(words)
-    categories = {category: [] for category in CATEGORIES.values()}
-
     for i, word in enumerate(words):
         if "category" not in word:
             print("\n%s words remaining..." % (len(words) - i))
             word["category"] = input_word_category(word)
             write_state(words)
-        categories[word["category"]].append(word)
 
-    return categories["unknown"], categories["unused"], categories["proper"]
+    return words
+
+
+def sort_by_category(words):
+    words = deepcopy(words)
+    categories = {category: [] for category in CATEGORIES.values()}
+    for i, word in enumerate(words):
+        categories[word["category"]].append(word)
+    return categories
 
 
 def input_word_category(word):
@@ -172,8 +177,9 @@ def sort_words_according_to_priority(words):
     return words_sorted
 
 
-def combine_and_limit_lists(unknown, unused, proper):
-    unknown, unused, proper = deepcopy(unknown), deepcopy(unused), deepcopy(proper)
+def select_words(words):
+    words = deepcopy(words)
+    unknown, unused, proper = sort_by_category(words)
 
     words = []
     words.extend(unknown[:25])
@@ -270,12 +276,9 @@ def get_word_and_sentence(save_file, vocabulary_file):
 if __name__ == "__main__":
     words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
     words = select_words_from_sentences(local_write_state, sentences, words)
-
-    unknown, unused, proper = categorize_list(local_write_state, words)
-    unknown = sort_list(local_write_state, unknown)
-    unused = sort_list(local_write_state, unused)
-
-    words = combine_and_limit_lists(unknown, unused, proper)
+    words = input_category_list(local_write_state, words)
+    words = sort_list(local_write_state, words)
+    words = select_words(words)
     words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
     words = hide_words_from_sentences(local_write_state, words)
     export_words_to_csv(words, CSV_FILE)
