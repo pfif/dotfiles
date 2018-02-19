@@ -89,7 +89,7 @@ def select_words_from_sentence(sentences):
 
 
 def select_word(sentence):
-    words = sentence.split(" ")
+    words = sentence.split()
     enumerated_words = ["%s. %s" % (i, word) for i, word in enumerate(words)]
     print("\n".join(enumerated_words))
 
@@ -248,7 +248,7 @@ def export_words_to_csv(words, csv_filename, extra_fields=None):
     if extra_fields is None:
         extra_fields = []
     fields = ["word", "definition", "sentence"]
-    fields.update(fields)
+    fields.extend(extra_fields)
 
     print("Exporting to CSV...")
     with open(csv_filename, "w", newline='') as csvfile:
@@ -267,15 +267,16 @@ def get_word_and_sentence(save_file, vocabulary_file):
     return words, sentences
 
 
-words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
-words = select_words_from_sentences(local_write_state, sentences, words)
+if __name__ == "__main__":
+    words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
+    words = select_words_from_sentences(local_write_state, sentences, words)
 
-unknown, unused, proper = categorize_list(words)
-unknown = sort_list(local_write_state, unknown)
-unused = sort_list(local_write_state, unused)
-proper = sort_list(local_write_state, proper)
+    unknown, unused, proper = categorize_list(words)
+    unknown = sort_list(local_write_state, unknown)
+    unused = sort_list(local_write_state, unused)
+    proper = sort_list(local_write_state, proper)
 
-words = combine_and_limit_lists(unknown, unused, proper)
-words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
-words = hide_words_from_sentences(local_write_state, words)
-export_words_to_csv(words, CSV_FILE)
+    words = combine_and_limit_lists(unknown, unused, proper)
+    words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
+    words = hide_words_from_sentences(local_write_state, words)
+    export_words_to_csv(words, CSV_FILE)

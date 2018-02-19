@@ -29,19 +29,12 @@ def input_definition_for_word_japanese(word):
     print(word["word"])
 
     definitions = []
-    additional_words = []
     furigana = None
 
     while True:
-        answer = input("(i)nput definition, input (f)urigana, (c)hange word, (a)dditional_words, (j)isho, (d)one : ")
+        answer = input("(i)nput definition, input (f)urigana, (c)hange word, (j)isho, (d)one : ")
         if answer == "i":
             definitions.append(input("definition: "))
-        elif answer == "a":
-            additional_word = None
-            while additional_word not in word["sentence"]:
-                additional_words = input("Word: ")
-            definition = input("definition: ")
-            additional_words.append("%s: %s" % (additional_words, definition))
         elif answer == "f":
             furigana = input("furigana: ")
         elif answer == "c":
@@ -51,14 +44,11 @@ def input_definition_for_word_japanese(word):
         elif answer == "d":
             if definitions and furigana:
                 definition_string = make_definition_string(definitions)
-                additional_words_string = make_definition_string(additional_words)
                 print("Definitions : %s" % definition_string)
                 print("Furigana : %s" % furigana)
-                print("Additional String: %s" % additional_words_string)
                 print("\n")
                 return word_string, definition_string, {
                     "furigana": furigana,
-                    "additional_words": additional_words_string
                 }
             else:
                 print("Either the definitions or the furigana are missing")
@@ -68,5 +58,5 @@ words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
 words = select_words_from_sentences(local_write_state, sentences, words)
 words = input_definition_for_words(local_write_state, words, input_definition_for_word_japanese)
 words = hide_words_from_sentences(local_write_state, words)
-export_words_to_csv(words, CSV_FILE, ["furigana", "additional_words"])
+export_words_to_csv(words, CSV_FILE, ["furigana"])
 print("Reminder : Move the CSV output to an accumulative file")
