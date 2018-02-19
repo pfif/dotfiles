@@ -271,10 +271,9 @@ if __name__ == "__main__":
     words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
     words = select_words_from_sentences(local_write_state, sentences, words)
 
-    unknown, unused, proper = categorize_list(words)
+    unknown, unused, proper = categorize_list(local_write_state, words)
     unknown = sort_list(local_write_state, unknown)
     unused = sort_list(local_write_state, unused)
-    proper = sort_list(local_write_state, proper)
 
     words = combine_and_limit_lists(unknown, unused, proper)
     words = input_definition_for_words(local_write_state, words, input_definition_for_word_english)
