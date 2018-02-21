@@ -18,6 +18,7 @@ def jisho(word):
 
 SAVE_FILE = ".japanese_vocabulary_state"
 VOCABULARY_FILE = "vocabulary_japanese.txt"
+CSV_FILE = "memrise_japanese.csv"
 
 local_write_state = partial(write_state_to_file, SAVE_FILE)
 
@@ -46,7 +47,9 @@ def input_definition_for_word_japanese(word):
                 print("Definitions : %s" % definition_string)
                 print("Furigana : %s" % furigana)
                 print("\n")
-                return word_string, definition_string
+                return word_string, definition_string, {
+                    "furigana": furigana,
+                }
             else:
                 print("Either the definitions or the furigana are missing")
 
@@ -55,4 +58,5 @@ words, sentences = get_word_and_sentence(SAVE_FILE, VOCABULARY_FILE)
 words = select_words_from_sentences(local_write_state, sentences, words)
 words = input_definition_for_words(local_write_state, words, input_definition_for_word_japanese)
 words = hide_words_from_sentences(local_write_state, words)
-export_words_to_csv(words)
+export_words_to_csv(words, CSV_FILE, ["furigana"])
+print("Reminder : Move the CSV output to an accumulative file")
