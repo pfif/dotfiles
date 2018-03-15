@@ -119,7 +119,7 @@ def sort_by_category(words):
     categories = {category: [] for category in CATEGORIES.values()}
     for i, word in enumerate(words):
         categories[word["category"]].append(word)
-    return categories
+    return categories["unknown"], categories["unused"], categories["proper"]
 
 
 def input_word_category(word):
@@ -146,7 +146,7 @@ def sort_list(write_state, words):
 
 def input_word_priority(word):
     print(word["sentence"])
-    print("What is the priority for the word '%s'" % word["word"])
+    print("What is the priority for the word '%s' (%s)" % (word["word"], word["category"]))
     while True:
         answer = input("(i)ndispensable, im(p)ortant, (n)ice, (o)ptional, (b)oring [(m)erriam-webster] : ")
         if answer in PRIORITIES.keys():
@@ -164,7 +164,7 @@ def vocabulary_com(word):
 
 
 def google(word):
-    webbrowser.open("https://www.google.co.uk/search?q=%s" % word)
+    webbrowser.open("https://www.google.co.uk/search?q=define:%s" % word)
 
 
 def sort_words_according_to_priority(words):
@@ -238,7 +238,7 @@ def input_definition_for_word_english(word):
             definition_string = make_definition_string(definitions)
             print("Definitions : %s" % definition_string)
             print("\n")
-            return word_string, definition_string
+            return word_string, definition_string, {}
 
 
 def make_definition_string(definitions):
