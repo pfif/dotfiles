@@ -1,0 +1,5 @@
+cat memrise_japanese.csv &&
+read -p "We cool?" &&
+cp ~/memrise_japanese.csv ~/memrise_japanese.csv.bak &&
+cat memrise_japanese.csv >> ~/memrise_japanese.csv
+echo "Done"
