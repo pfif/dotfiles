@@ -28,7 +28,7 @@ def write_state_to_file(
         "words": words,
         "sentences": sentences,
     }
-    json.dump(state, file_, indent=4)
+    json.dump(state, file_, indent=4, ensure_ascii=False)
     file_.close()
 
 
