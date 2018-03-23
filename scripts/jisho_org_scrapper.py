@@ -40,7 +40,8 @@ class JishoOrgWordSpider(scrapy.Spider):
             word_in_hiragana = "".join(furigana_and_kanji_mixed_characters)
 
         return OrderedDict([
-            ("Furigana", word_in_hiragana),
-            ("English", definition),
             ("Kanji", word_in_kanjis),
+            ("English", definition),
+            ("Example", ""),
+            ("Furigana", word_in_hiragana),
         ])
