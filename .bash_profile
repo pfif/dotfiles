@@ -7,3 +7,5 @@ alias gp="git push origin HEAD"
 alias gpf="gp -f"
 
 alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
+
+export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
