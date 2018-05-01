@@ -329,6 +329,24 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  ;; function kindly tailor-crafted by sulami
+  (defun sulami/ag-to-buffer ()
+    (interactive)
+    (let ((inhibit-read-only t)
+          (buf-name "*ag-to-buffer*")
+          (ag-command (concatenate 'string
+                                   "ag "
+                                   (symbol-name (symbol-at-point))
+                                   " "
+                                   (projectile-project-root)
+                                   " --nogroup")))
+      (split-window-below-and-focus)
+      (get-buffer-create buf-name)
+      (switch-to-buffer buf-name)
+      (erase-buffer)
+      (shell-command ag-command buf-name)))
+  (spacemacs/set-leader-keys "sdP" 'sulami/ag-to-buffer)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
