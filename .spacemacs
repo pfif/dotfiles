@@ -347,6 +347,12 @@ you should place your code here."
       (erase-buffer)
       (shell-command ag-command buf-name)))
   (spacemacs/set-leader-keys "sdP" 'sulami/ag-to-buffer)
+
+  (defun pfif/org-scratch-buffer ()
+    (interactive)
+    (find-file "/tmp/daily_org.org")
+    )
+  (spacemacs/set-leader-keys "bS" 'pfif/org-scratch-buffer)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
