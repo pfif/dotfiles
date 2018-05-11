@@ -353,7 +353,33 @@ you should place your code here."
     (find-file "/tmp/daily_org.org")
     )
   (spacemacs/set-leader-keys "bS" 'pfif/org-scratch-buffer)
-  )
+
+  (defun pfif/get-file-path-from-projectile-root
+      (filepath)
+    (car (split-string filepath (projectile-project-root) t))
+    )
+
+  (defun pfif/elixir-formatter ()
+    (interactive)
+    (let ((mix-command (concatenate 'string
+                                    "docker-compose -f "
+                                    (projectile-project-root)
+                                    "docker-compose.yml run --rm siege mix format "
+                                    (pfif/get-file-path-from-projectile-root
+                                     (buffer-file-name)))))
+      (save-buffer)
+      (when (get-process "elixir-formatter")
+        (message "Found process to kill")
+        (kill-process "elixir-formatter"))
+
+      (start-process-shell-command "elixir-formatter" nil mix-command)
+
+      (set-process-sentinel
+       (get-process "elixir-formatter")
+       (lambda
+         (process state)
+         (message (string-trim state))))))
+  (spacemacs/set-leader-keys-for-major-mode 'elixir-mode "mf" 'pfif/elixir-formatter))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
