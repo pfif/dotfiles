@@ -379,7 +379,10 @@ you should place your code here."
        (lambda
          (process state)
          (message (string-trim state))))))
-  (spacemacs/set-leader-keys-for-major-mode 'elixir-mode "mf" 'pfif/elixir-formatter))
+  (spacemacs/set-leader-keys-for-major-mode 'elixir-mode "mf" 'pfif/elixir-formatter)
+
+  (spacemacs/set-leader-keys "xww" 'count-words))
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
