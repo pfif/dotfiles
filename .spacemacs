@@ -61,6 +61,7 @@ values."
      syntax-checking
      vagrant
      docker
+     latex
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
