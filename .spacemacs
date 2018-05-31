@@ -351,9 +351,17 @@ you should place your code here."
 
   (defun pfif/org-scratch-buffer ()
     (interactive)
-    (find-file "/tmp/daily_org.org")
+    (popwin:popup-buffer
+     (find-file-noselect "/tmp/daily_org.org")
+     :position :bottom
+     :stick t)
     )
   (spacemacs/set-leader-keys "bS" 'pfif/org-scratch-buffer)
+
+  (defun pfif/switch-to-tasklist ()
+    (interactive)
+    (projectile-switch-project-by-name "~/tasklist/"))
+  (spacemacs/set-leader-keys "pe" 'pfif/switch-to-tasklist)
 
   (defun pfif/get-file-path-from-projectile-root
       (filepath)
