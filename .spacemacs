@@ -360,7 +360,10 @@ you should place your code here."
 
   (defun pfif/switch-to-tasklist ()
     (interactive)
-    (projectile-switch-project-by-name "~/tasklist/"))
+    (let ((persp-reset-windows-on-nil-window-conf t))
+      (persp-switch "~/tasklist/")
+      (find-file "~/tasklist/taskslist.org"))
+    )
   (spacemacs/set-leader-keys "pe" 'pfif/switch-to-tasklist)
 
   (defun pfif/get-file-path-from-projectile-root
