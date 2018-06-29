@@ -366,6 +366,13 @@ you should place your code here."
     )
   (spacemacs/set-leader-keys "pe" 'pfif/switch-to-tasklist)
 
+  (defun pfif/search-slack-mail-entry ()
+    (interactive)
+    (evil-search "\*+ Slack/Mail round" t t)
+    (evil-search-highlight-persist-remove-all)
+    )
+  (spacemacs/set-leader-keys "pq" 'pfif/search-slack-mail-entry)
+
   (defun pfif/get-file-path-from-projectile-root
       (filepath)
     (car (split-string filepath (projectile-project-root) t))
