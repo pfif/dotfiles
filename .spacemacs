@@ -71,6 +71,7 @@ values."
    dotspacemacs-additional-packages
    '(
      fountain-mode
+     chronos
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -357,6 +358,33 @@ you should place your code here."
      :stick t)
     )
   (spacemacs/set-leader-keys "bS" 'pfif/org-scratch-buffer)
+
+  ;; Chronos
+  (defun pfif/chronos-buffer ()
+    (interactive)
+    (popwin:popup-buffer
+     (get-buffer-create "*chronos*")
+     :position :bottom
+     :stick t)
+    )
+  (spacemacs/set-leader-keys "ot" 'pfif/chronos-buffer)
+  (spacemacs/set-leader-keys "oc" 'chronos-delete-all-expired)
+  (spacemacs/set-leader-keys "oa" 'chronos-add-timers-from-string)
+  (spacemacs/set-leader-keys "oh" 'pfif/chronos-add-time)
+
+  (defun pfif/repeat-value
+      (value nb_repetition &optional list)
+    (if (> nb_repetition 0)
+        (pfif/repeat-value value (- nb_repetition 1) (cons value list))
+      list)
+    )
+  (defun pfif/chronos-add-time (number_of_hours)
+    (interactive "nFor how many hours do you want to work?: ")
+    (chronos-add-timers-from-string
+     (string-join
+      (pfif/repeat-value "17 + 3" (* number_of_hours 3))
+      " + ")
+     nil))
 
   (defun pfif/switch-to-tasklist ()
     (interactive)
