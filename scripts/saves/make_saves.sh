@@ -1,6 +1,6 @@
 save(){
-    rsync -aPv $RSYNC_DRY_RUN $SOURCE_DIRECTORY  ~/saves/$SAVE_NAME/
-    b2 sync $B2_DRY_RUN --delete --threads 1 ~/saves/$SAVE_NAME/ b2://mistertree-saves/$SAVE_NAME/
+    rsync -aPv --delete $RSYNC_DRY_RUN $SOURCE_DIRECTORY  ~/saves/$SAVE_NAME/
+    b2 sync $B2_DRY_RUN --skipNewer --delete --threads 1 ~/saves/$SAVE_NAME/ b2://mistertree-saves/$SAVE_NAME/
 }
 
 usage(){
