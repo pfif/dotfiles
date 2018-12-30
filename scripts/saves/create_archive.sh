@@ -1,6 +1,6 @@
 command(){
-    tar --create --file - --verbose $ARCHIVE_NAME | gpg --recipient florent.pastor@gmail.com --encrypt --verbose -o $ARCHIVE_NAME.gpg
-    rm -v $ARCHIVE_DIRECTORY/$ARCHIVE_NAME.gpg
+    tar --create --file - --verbose $ARCHIVE_NAME | gpg --recipient florent.pastor@gmail.com --encrypt --verbose -o $ARCHIVE_NAME.gpg &&
+    rm -v $ARCHIVE_DIRECTORY/$ARCHIVE_NAME.gpg &&
     cp -v $ARCHIVE_NAME.gpg $ARCHIVE_DIRECTORY/$ARCHIVE_NAME.gpg
 }
 
