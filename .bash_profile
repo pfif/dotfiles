@@ -9,3 +9,10 @@ alias gpf="gp -f"
 alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
 
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
+
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
