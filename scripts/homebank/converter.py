@@ -5,7 +5,7 @@ from io import StringIO
 # Unit : Make a transaction line
 def homebank_transaction(date, amount, info):
     return [
-        date.strftime("%d-%m-%y"),
+        date.strftime("%m-%d-%y"),
         0,
         info,
         '',
