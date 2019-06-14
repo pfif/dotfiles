@@ -53,8 +53,8 @@ values."
      emacs-lisp
      git
      github
-     ;; markdown
-     ;; org
+     markdown
+     org
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -395,6 +395,12 @@ you should place your code here."
     )
   (spacemacs/set-leader-keys "pe" 'pfif/switch-to-tasklist)
 
+  (defun pfif/switch-to-local-tasklist ()
+    (interactive)
+    (find-file "~/local_taskslist.org")
+    )
+  (spacemacs/set-leader-keys "pw" 'pfif/switch-to-local-tasklist)
+
   (defun pfif/search-slack-mail-entry ()
     (interactive)
     (evil-search "\*+ Slack/Mail round" t t)
@@ -439,9 +445,10 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files (quote ("~/local_taskslist.org")))
  '(package-selected-packages
    (quote
-    (auctex-latexmk auctex multiple-cursors avy company smartparens evil flycheck yasnippet projectile helm helm-core async org-plus-contrib with-editor hydra js2-mode s dash magit-popup git-commit ghub magit fountain-mode docker tablist docker-tramp dockerfile-mode intero flycheck-haskell company-ghci company-ghc ghc hlint-refactor hindent helm-hoogle haskell-snippets haskell-mode cmm-mode flycheck-elixir yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package toc-org tagedit spaceline smeargle slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rake rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode paradox orgit org-bullets open-junk-file ob-elixir nginx-mode neotree move-text mmm-mode minitest markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode json-mode js2-refactor js-doc indent-guide hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-ag google-translate golden-ratio github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flycheck-pos-tip flycheck-mix flycheck-credo flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode csv-mode column-enforce-mode coffee-mode clean-aindent-mode chruby bundler auto-highlight-symbol auto-compile anaconda-mode alchemist aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
+    (org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download htmlize gnuplot powerline pcre2el markdown-mode skewer-mode simple-httpd dash-functional parent-mode request haml-mode gitignore-mode gh marshal logito pcache ht pos-tip flx highlight transient iedit anzu goto-chg undo-tree json-snatcher json-reformat clj-refactor inflections edn paredit peg lv cider-eval-sexp-fu cider sesman spinner queue parseedn clojure-mode parseclj a chronos inf-ruby bind-map bind-key packed pythonic f elixir-mode pkg-info epl popup auctex-latexmk auctex multiple-cursors avy company smartparens evil flycheck yasnippet projectile helm helm-core async org-plus-contrib with-editor hydra js2-mode s dash magit-popup git-commit ghub magit fountain-mode docker tablist docker-tramp dockerfile-mode intero flycheck-haskell company-ghci company-ghc ghc hlint-refactor hindent helm-hoogle haskell-snippets haskell-mode cmm-mode flycheck-elixir yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package toc-org tagedit spaceline smeargle slim-mode scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rake rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode paradox orgit org-bullets open-junk-file ob-elixir nginx-mode neotree move-text mmm-mode minitest markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode json-mode js2-refactor js-doc indent-guide hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-ag google-translate golden-ratio github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flycheck-pos-tip flycheck-mix flycheck-credo flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode csv-mode column-enforce-mode coffee-mode clean-aindent-mode chruby bundler auto-highlight-symbol auto-compile anaconda-mode alchemist aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
