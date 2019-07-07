@@ -1,2 +1,1 @@
-setxkbmap fr
-exec awesome
+setxkbmap -option "ctrl:nocaps"
