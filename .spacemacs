@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     auto-completion
      clojure
      haskell
      ruby
@@ -53,6 +54,7 @@ values."
      emacs-lisp
      git
      github
+     go
      markdown
      org
      ;; (shell :variables
@@ -63,6 +65,7 @@ values."
      vagrant
      docker
      latex
+     restclient
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -397,7 +400,9 @@ you should place your code here."
 
   (defun pfif/switch-to-local-tasklist ()
     (interactive)
-    (find-file "~/local_taskslist.org")
+    (let ((persp-reset-windows-on-nil-window-conf t))
+      (persp-switch "~/local_tasklist/")
+      (find-file "~/local_tasklist/local_tasklist.org"))
     )
   (spacemacs/set-leader-keys "pw" 'pfif/switch-to-local-tasklist)
 
