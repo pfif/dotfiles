@@ -503,7 +503,6 @@ you should place your code here."
       (switch-to-buffer buf-name)
       (erase-buffer)
       (shell-command ag-command buf-name)))
-  (spacemacs/set-leader-keys "sdP" 'sulami/ag-to-buffer)
 
   (defun pfif/org-scratch-buffer ()
     (interactive)
@@ -547,7 +546,7 @@ you should place your code here."
       (persp-switch "~/tasklist/")
       (find-file "~/tasklist/taskslist.org"))
     )
-  (spacemacs/set-leader-keys "pe" 'pfif/switch-to-tasklist)
+  (spacemacs/set-leader-keys "pq" 'pfif/switch-to-tasklist)
 
   (defun pfif/switch-to-local-tasklist ()
     (interactive)
@@ -556,13 +555,6 @@ you should place your code here."
       (find-file "~/local_tasklist/local_tasklist.org"))
     )
   (spacemacs/set-leader-keys "pw" 'pfif/switch-to-local-tasklist)
-
-  (defun pfif/search-slack-mail-entry ()
-    (interactive)
-    (evil-search "\*+ Slack/Mail round" t t)
-    (evil-search-highlight-persist-remove-all)
-    )
-  (spacemacs/set-leader-keys "pq" 'pfif/search-slack-mail-entry)
 
   (defun pfif/get-file-path-from-projectile-root
       (filepath)
