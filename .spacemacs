@@ -583,6 +583,7 @@ you should place your code here."
 
   (spacemacs/set-leader-keys "xww" 'count-words)
   (setq go-format-before-save t)
+  (setq epa-pinentry-mode 'loopback)
   )
 
 
