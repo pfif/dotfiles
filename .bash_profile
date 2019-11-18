@@ -20,3 +20,6 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 source "$HOME/local_bash_profile.sh"
+
+# Never overwrite script files
+alias script="script -a"
