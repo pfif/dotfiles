@@ -215,6 +215,14 @@ List library that comes in handy.
   (straight-freeze-versions))
 #+end_src
 ** Appearance
+*** Font
+Set the font to Fira Code and enable ligatures.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(let ((font "Fira Code 14"))
+  (set-face-attribute 'default nil :font font)
+  (set-frame-font font nil t))
+(mac-auto-operator-composition-mode)
+#+END_SRC
 *** Theme
 #+BEGIN_SRC emacs-lisp :tangle yes
 ;; I like to live dangerously
