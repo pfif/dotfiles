@@ -1183,11 +1183,10 @@ This allows me to benchmark Emacs startup.
 ** LSP
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package lsp-mode
-  :disabled
   :defer t
   :commands lsp
   :config
-  (add-to-list 'lsp-language-id-configuration '(clojure-mode . "clojure-mode"))
+  (add-to-list 'lsp-language-id-configuration '(dart-mode . "dart-mode"))
   :init
   (setq lsp-enable-indentation nil)
   :general
@@ -1200,13 +1199,10 @@ This allows me to benchmark Emacs startup.
     "l R" 'lsp-restart-workspace
     "l u" 'lsp-find-references))
 
-(use-package company-lsp
-  :disabled
-  :defer t
+(use-package company-lsp :defer t
   :commands company-lsp)
 
 (use-package lsp-ui
-  :disabled
   :defer t
   :commands lsp-ui-mode)
 #+END_SRC
@@ -1297,6 +1293,10 @@ Place point on the outer-most opening parenthesis to start:
     (goto-char (+ 1 start))
     (sp-forward-slurp-sexp (+ 1 depth))
     (goto-char start)))
+#+END_SRC
+** Dart
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package dart-mode)
 #+END_SRC
 ** Haskell
 #+BEGIN_SRC emacs-lisp :tangle yes
