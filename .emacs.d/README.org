@@ -1,0 +1,1357 @@
+#+STARTUP: showall
+#+FILETAGS: sideproject yak
+#+CATEGORY: Emacs
+* Emacs
+** Better defaults
+*** Use lexical binding in this file
+This org-mode file gets built into an elisp file, and we want this comment at
+the top for performance reasons.
+#+BEGIN_SRC emacs-lisp :tangle yes
+;; -*- lexical-binding: t; -*-
+#+END_SRC
+*** Discard the custom file
+~custom.el~ is hidden state, all config is declarative.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq custom-file (make-temp-file ""))
+#+END_SRC
+*** Hide Backups
+This way we lose everything backups if the whole machine crashes, but
+we don't accidentally leave backups around.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq backup-directory-alist '(("." . "/tmp/emacs-backup")))
+#+END_SRC
+*** No trash
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq delete-by-moving-to-trash nil)
+#+END_SRC
+*** Remember recent files
+#+BEGIN_SRC emacs-lisp :tangle yes
+(when (require 'recentf)
+  (recentf-mode 1)
+  (setq recentf-max-saved-items 255))
+#+END_SRC
+*** Be quiet on startup
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq inhibit-splash-screen t
+      inhibit-startup-screen t
+      inhibit-startup-message t)
+#+END_SRC
+*** Don't tell me about keybindings
+#+begin_src emacs-lisp :tangle yes
+(setq suggest-key-bindings nil)
+#+end_src
+*** Make Tramp great again
+#+begin_src emacs-lisp :tangle yes
+(setq tramp-default-method "ssh"
+      tramp-ssh-controlmaster-options
+      "-o ControlMaster=auto -o ControlPath='tramp.%%C'")
+
+;; Various speedups
+;; from https://www.gnu.org/software/emacs/manual/html_node/tramp/Frequently-Asked-Questions.html
+(setq remote-file-name-inhibit-cache 3600
+      tramp-completion-reread-directory-timeout nil
+      vc-ignore-dir-regexp (format "%s\\|%s"
+                                   vc-ignore-dir-regexp
+                                   tramp-file-name-regexp)
+      tramp-verbose 0)
+
+;; Disable the history file on remote hosts
+(setq tramp-histfile-override t)
+
+;; Save backup files locally
+;; from https://stackoverflow.com/a/47021266
+(add-to-list 'backup-directory-alist
+             (cons tramp-file-name-regexp "/tmp/emacs-backup/"))
+#+end_src
+*** Remember where we were
+#+begin_src emacs-lisp :tangle yes
+(require 'saveplace)
+(save-place-mode 1)
+#+end_src
+*** Don't ring the bell
+#+begin_src emacs-lisp :tangle yes
+(setq ring-bell-function 'ignore)
+#+end_src
+*** Start the scratch buffer empty
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq initial-scratch-message "")
+#+END_SRC
+*** Default to Elisp
+#+begin_src emacs-lisp :tangle yes
+(setq initial-major-mode 'emacs-lisp-mode)
+#+end_src
+*** Switch to the help window
+#+begin_src emacs-lisp :tangle yes
+(setq help-window-select t)
+#+end_src
+*** Spaces > tabs
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+*** Sentences end with a single space
+#+begin_src emacs-lisp :tangle yes
+(setq sentence-end-double-space nil)
+#+end_src
+*** Show trailing whitespace
+It's disabled by default, and then gets enabled for all file-based
+buffer modes, so not for REPLS and shells.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default show-trailing-whitespace nil)
+(defun sulami/show-trailing-whitespace ()
+  "Just sets `show-trailing-whitespace'."
+  (setq show-trailing-whitespace t))
+(add-hook 'prog-mode-hook 'sulami/show-trailing-whitespace)
+(add-hook 'text-mode-hook 'sulami/show-trailing-whitespace)
+#+END_SRC
+*** Show empty lines
+This shows vim-style tildes on the left fringe.
+#+begin_src emacs-lisp :tangle yes
+(setq-default indicate-empty-lines t)
+(define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
+(setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
+#+end_src
+*** Highlight matching parens
+#+BEGIN_SRC emacs-lisp :tangle yes
+(show-paren-mode 1)
+#+END_SRC
+*** Scrolling
+These settings were lifted off the internet™ and make scrolling with pointing
+devices feel more reasonable.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq mouse-wheel-progressive-speed nil
+      mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+#+END_SRC
+*** No line wrapping
+At least as a default, much nicer when resizing windows.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(set-default 'truncate-lines t)
+(setq line-move-visual nil)
+#+END_SRC
+*** UTF-8
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default buffer-file-coding-system 'utf-8)
+(setenv "LANG" "en_be.UTF-8")
+(prefer-coding-system 'utf-8)
+#+END_SRC
+*** Spelling
+Use ~aspell~ with British English.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq ispell-program-name "aspell"
+      ispell-extra-args (quote ("--sug-mode=ultra" "--lang=en_GB-ise")))
+#+END_SRC
+*** Enable erase buffer
+#+begin_src emacs-lisp :tangle yes
+(put 'erase-buffer 'disabled nil)
+#+end_src
+*** Y/N for yes or no questions
+#+BEGIN_SRC emacs-lisp :tangle yes
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+*** Ask before exiting
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq confirm-kill-emacs 'yes-or-no-p)
+#+END_SRC
+*** Frame title
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq frame-title-format
+      (list :eval '(let ((p-name (projectile-project-name)))
+		     (if (string-equal p-name "-")
+			 "Emacs"
+		       (concat "Emacs - " p-name)))))
+#+END_SRC
+*** Disable all the GUI
+#+BEGIN_SRC emacs-lisp :tangle yes
+(if (and (fboundp 'tool-bar-mode)
+         tool-bar-mode)
+    (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(if (fboundp 'tooltip-mode) (tooltip-mode -1))
+#+END_SRC
+** macOS
+Everything in here relates to macOS in some way.
+*** Swap the modifier keys
+The MacPorts build I'm using swaps the modifiers from what I'm used to, so I'm
+swapping them back.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq mac-command-modifier 'super
+      mac-option-modifier 'meta)
+#+END_SRC
+*** Fix paste
+Especially Alfred likes to paste with ~⌘-v~, so that needs to work.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(define-key global-map (kbd "s-v") 'yank)
+#+END_SRC
+*** Fullscreen with ⌘-Return
+#+BEGIN_SRC emacs-lisp :tangle yes
+(define-key global-map (kbd "<s-return>") 'toggle-frame-fullscreen)
+#+END_SRC
+*** Mac font panel
+#+BEGIN_SRC emacs-lisp :tangle yes
+(define-key global-map (kbd "s-t") 'mac-font-panel-mode)
+#+END_SRC
+** Package management
+*** use-package
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq straight-use-package-by-default t)
+#+END_SRC
+*** el-patch
+Allows for patching functions in packages.
+#+begin_src emacs-lisp :tangle yes
+(use-package el-patch)
+#+end_src
+*** Dash
+List library that comes in handy.
+#+begin_src emacs-lisp :tangle yes
+(use-package dash)
+#+end_src
+*** Updating
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/update-packages ()
+  "Prunes and updates packages, revalidates patches."
+  (straight-prune-build-directory)
+  (straight-pull-all)
+  (el-patch-validate-all)
+  (straight-freeze-versions))
+#+end_src
+** Appearance
+*** Theme
+#+BEGIN_SRC emacs-lisp :tangle yes
+;; I like to live dangerously
+(setq custom-safe-themes t)
+
+(defun sulami/disable-all-themes ()
+  "Disables all custom themes."
+  (interactive)
+  (mapc #'disable-theme custom-enabled-themes))
+
+(defun sulami/before-load-theme-advice (theme &optional no-confirm no-enable)
+  "Disable all themes before loading a new one.
+
+Prevents mixing of themes, where one theme doesn't override all faces
+of another theme."
+  (sulami/disable-all-themes))
+
+(advice-add 'load-theme
+            :before
+            #'sulami/before-load-theme-advice)
+
+(defun sulami/after-load-theme-advice (theme &optional no-confirm no-enable)
+  "Unsets backgrounds for some org-mode faces."
+  (set-face-background 'outline-1 nil)
+  (set-face-background 'org-block nil)
+  (set-face-background 'org-block-begin-line nil)
+  (set-face-background 'org-block-end-line nil)
+  (set-face-background 'org-quote nil))
+
+(advice-add 'load-theme
+            :after
+            #'sulami/after-load-theme-advice)
+
+(use-package doom-themes
+  :after (dash)
+  :init
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  :config
+  (doom-themes-org-config)
+  ;; Set the default colourscheme according to the time of day
+  :hook (after-init . (lambda ()
+                        (let ((hour-of-day (read (format-time-string "%H"))))
+                          (if (<= 8 hour-of-day 17)
+                              (load-theme 'doom-solarized-light t)
+                            (load-theme 'doom-solarized-dark t))))))
+#+END_SRC
+*** All the icons
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package all-the-icons
+  :defer t)
+
+(use-package all-the-icons-dired
+  :defer t
+  :hook (dired-mode . all-the-icons-dired-mode))
+#+END_SRC
+*** Modeline
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-modal-icon nil
+        doom-modeline-buffer-file-name-style 'relative-to-project
+        doom-modeline-buffer-encoding nil
+        doom-modeline-persp-name nil
+        doom-modeline-vcs-max-length 36))
+#+END_SRC
+** Org mode
+*** Plain source code blocks
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq org-src-preserve-indentation nil
+      org-edit-src-content-indentation 0)
+#+END_SRC
+*** Open source code blocks in the same window
+#+begin_src emacs-lisp :tangle yes
+(setq org-src-window-setup 'current-window)
+#+end_src
+*** Enable babel for more languages
+#+begin_src emacs-lisp :tangle yes
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (shell . t)
+   (python . t)
+   (clojure . t)))
+#+end_src
+*** Use drawers for source block evaluation
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'org-babel-default-header-args '(:results . "replace drawer"))
+#+end_src
+*** Disable ligatures in org-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+(add-hook 'org-mode-hook
+          (lambda ()
+            (auto-composition-mode -1)))
+#+END_SRC
+*** Show emphasis markers
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq org-hide-emphasis-markers nil)
+#+END_SRC
+*** Indent-mode
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq org-indent-indentation-per-level 1)
+(add-hook 'org-mode-hook 'org-indent-mode)
+#+END_SRC
+*** Enable spell checking
+#+begin_src emacs-lisp :tangle yes
+;(add-hook 'org-mode-hook 'flyspell-mode)
+#+end_src
+*** Archive into a shared file
+#+begin_src emacs-lisp :tangle yes
+(setq org-archive-location "archive.org::")
+#+end_src
+*** Agenda
+#+begin_src emacs-lisp :tangle yes
+(setq org-directory "~/Documents/Notes/"
+      org-agenda-files (list org-directory
+                             "~/.emacs/README.org")
+      org-agenda-tag-filter-preset '("-archived" "-noagenda"))
+#+end_src
+*** Capture
+#+begin_src emacs-lisp :tangle yes
+(setq org-capture-templates
+      '(("t" "Todo" entry
+         (file "inbox.org")
+         "* TODO %?\n%u")
+        ("f" "File" entry
+         (file "inbox.org")
+         "* TODO %?\n%a")
+        ("c" "Climbing journal" entry
+         (file "climbing.org")
+         "* %u\n%?"
+         :prepend t)))
+#+end_src
+*** Refile
+This allows me to refile from the GTD inbox to the top-level of a file.
+#+begin_src emacs-lisp :tangle yes
+(setq org-refile-targets '((org-agenda-files :tag . "n0nexistent"))
+      org-refile-use-outline-path 'file)
+#+end_src
+*** Open the inbox
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun sulami/open-org-inbox ()
+  "Opens the inbox file."
+  (interactive)
+  (find-file "~/Documents/Notes/inbox.org"))
+#+END_SRC
+*** Calendar
+Weeks start on Monday, and who thought MDY was a good idea?
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq calendar-week-start-day 1
+      calendar-date-style 'iso)
+#+END_SRC
+*** TODO org-jira
+#+begin_src emacs-lisp :tangle yes
+(use-package org-jira
+  :disabled)
+#+end_src
+** Custom functions
+*** Config
+**** Open this file
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun sulami/open-emacs-config ()
+  "Opens the config file for our favourite OS."
+  (interactive)
+  (find-file sulami/emacs-config-file))
+#+END_SRC
+**** Reload this file
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun sulami/reload-emacs-config ()
+  "Loads the config file for our favourite OS."
+  (interactive)
+  (org-babel-load-file sulami/emacs-config-file))
+#+END_SRC
+*** Buffers
+**** Rename buffer file
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun sulami/rename-file-and-buffer ()
+  "Rename the current buffer and file it is visiting."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (message "Buffer is not visiting a file!")
+      (let ((new-name (read-file-name "New name: " filename)))
+        (cond
+         ((vc-backend filename) (vc-rename-file filename new-name))
+         (t
+          (rename-file filename new-name t)
+          (set-visited-file-name new-name t t)))))))
+#+END_SRC
+**** Switch to buffer shortcuts
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun sulami/open-scratch-buffer ()
+  "Open the scratch buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
+(defun sulami/open-message-buffer ()
+  "Open the message buffer."
+  (interactive)
+  (switch-to-buffer "*Messages*"))
+#+END_SRC
+**** Buffer line count
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun sulami/buffer-line-count ()
+  "Get the number of lines in the active buffer."
+  (count-lines 1 (point-max)))
+#+END_SRC
+**** Delete buffer file
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/delete-file-and-buffer ()
+  "Deletes a buffer and the file it's visiting."
+  (interactive)
+  (when-let* ((file-name (buffer-file-name))
+              (really (yes-or-no-p (format "Delete %s? "
+                                           file-name))))
+    (delete-file file-name)
+    (kill-buffer)))
+#+end_src
+**** Copy buffer
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/copy-buffer ()
+  "Copies the entire buffer to the kill-ring."
+  (interactive)
+  (copy-region-as-kill 1 (point-max)))
+#+end_src
+*** Windows
+**** Maximise a window
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/toggle-maximise-window ()
+  "Toggles maximising the current window."
+  (interactive)
+  (let ((el-reg ?F))
+    (if (< winum--window-count 2)
+        (jump-to-register el-reg)
+      (progn
+        (window-configuration-to-register el-reg)
+        (delete-other-windows)))))
+#+end_src
+**** Triple fibonacci windows
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/layout-triple-fib ()
+  "Open one window on the left and stacked on the right."
+  (interactive)
+  (delete-other-windows)
+  (split-window-horizontally)
+  (select-window (next-window))
+  (split-window-vertically))
+#+end_src
+*** Run a shell command on a region
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/shell-command-on-region (beg end)
+  (interactive "r")
+  (if (use-region-p)
+      (let ((cmd (read-shell-command "Command: ")))
+        (call-process-region beg end cmd t t))
+    (message "Select a region first")))
+#+end_src
+*** Sort words
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/sort-words (beg end)
+  "Sorts words in region."
+  (interactive "r")
+  (sort-regexp-fields nil "\\w+" "\\&" beg end))
+#+end_src
+*** Toggle narrowing
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/toggle-narrow ()
+  "Toggles `narrow-to-defun' or `org-narrow-to-subtree'."
+  (interactive)
+  (if (buffer-narrowed-p)
+      (widen)
+    (if (eq major-mode 'org-mode)
+        (org-narrow-to-subtree)
+      (narrow-to-defun))))
+#+end_src
+** General
+General allows me to use fancy prefix keybindings.
+
+I'm using a spacemacs-inspired system of a global leader key and a local leader
+key for major modes. Bindings are setup in the respective ~use-package~
+declarations.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package general
+  :config
+  (general-auto-unbind-keys)
+  (general-evil-setup)
+  (defconst leader-key "SPC")
+  (general-create-definer leader-def
+    :prefix leader-key
+    :keymaps 'override
+    :states '(normal visual))
+  (defconst local-leader-key ",")
+  (general-create-definer local-leader-def
+    :prefix local-leader-key
+    :keymaps 'override
+    :states '(normal visual))
+  (leader-def
+    "" '(nil :wk "my lieutenant general prefix")
+    ;; Prefixes
+    "a" '(:ignore t :wk "app")
+    "b" '(:ignore t :wk "buffer")
+    "f" '(:ignore t :wk "file")
+    "f e" '(:ignore t :wk "emacs")
+    "g" '(:ignore t :wk "git")
+    "h" '(:ignore t :wk "help")
+    "j" '(:ignore t :wk "jump")
+    "k" '(:ignore t :wk "lisp")
+    "l" '(:ignore t :wk "lsp")
+    "p" '(:ignore t :wk "project/perspective")
+    "s" '(:ignore t :wk "search")
+    "t" '(:ignore t :wk "toggle")
+    "w" '(:ignore t :wk "window")
+    ;; General keybinds
+    "\\" 'indent-region
+    "|" 'sulami/shell-command-on-region
+    "a a" 'org-agenda
+    "a c" 'org-capture
+    "a C" 'calc
+    "a i" 'sulami/open-org-inbox
+    "a s" 'shell
+    "a t" 'ansi-term
+    "b e" 'erase-buffer
+    "b d" 'kill-this-buffer
+    "b m" 'sulami/open-message-buffer
+    "b r" 'sulami/rename-file-and-buffer
+    "b s" 'sulami/open-scratch-buffer
+    "b y" 'sulami/copy-buffer
+    "f e e" 'sulami/open-emacs-config
+    "f e r" 'sulami/reload-emacs-config
+    "f d" 'dired
+    "f D" 'sulami/delete-file-and-buffer
+    "f R" 'sulami/rename-file-and-buffer
+    "h d" 'describe-symbol
+    "h f" 'describe-function
+    "h g" 'general-describe-keybindings
+    "h l" 'view-lossage
+    "h v" 'describe-variable
+    "t l" 'toggle-truncate-lines
+    "t r" 'refill-mode
+    "t s" 'flyspell-mode
+    "t n" 'linum-mode
+    "t N" 'sulami/toggle-narrow
+    "w =" 'balance-windows
+    "w m" 'sulami/toggle-maximise-window)
+  (general-define-key
+   "s-m" 'suspend-frame
+   "s-=" (lambda () (interactive) (text-scale-increase 0.5))
+   "s--" (lambda () (interactive) (text-scale-decrease 0.5))
+   "s-0" (lambda () (interactive) (text-scale-increase 0)))
+  ;; Org mode
+  (local-leader-def
+    :keymaps 'org-mode-map
+    :states '(normal)
+    "a" 'org-archive-subtree
+    "d" 'org-deadline
+    "f" 'org-fill-paragraph
+    "l" 'org-insert-link
+    "r" '(org-refile :wk "org-refile")
+    "s" 'org-schedule
+    "S" 'org-babel-switch-to-session)
+  ;; Dired
+  (general-define-key
+   :keymaps 'dired-mode-map
+   "<return>" 'dired-find-alternate-file))
+#+END_SRC
+** Hydra
+#+begin_src emacs-lisp :tangle yes
+(use-package hydra
+  :defer t)
+#+end_src
+** Evil
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil
+  :init
+  (setq evil-want-C-u-scroll t
+        evil-want-C-i-jump t
+        evil-want-Y-yank-to-eol t
+        evil-want-keybinding nil)
+  :config
+  ;; This conflicts with the local leader
+  (unbind-key "," evil-motion-state-map)
+
+  (defun sulami/evil-set-jump-wrapper (cmd)
+    "Wraps a general command to call `evil-set-jump' before."
+    (let ((cmd-name (symbol-name cmd)))
+      `((lambda (&rest rest)
+          (interactive)
+          (evil-set-jump)
+          (apply (quote ,cmd) rest))
+        :wk ,cmd-name)))
+
+  (defun sulami/evil-shift-left-visual ()
+    "`evil-shift-left`, but keeps the selection."
+    (interactive)
+    (call-interactively 'evil-shift-left)
+    (evil-normal-state)
+    (evil-visual-restore))
+
+  (defun sulami/evil-shift-right-visual ()
+    "`evil-shift-right`, but keeps the selection."
+    (interactive)
+    (call-interactively 'evil-shift-right)
+    (evil-normal-state)
+    (evil-visual-restore))
+
+  :general
+  (leader-def
+   "TAB" 'evil-switch-to-windows-last-buffer
+   "<tab>" 'evil-switch-to-windows-last-buffer
+   "w d" 'evil-window-delete
+   "w h" 'evil-window-move-far-left
+   "w j" 'evil-window-move-very-bottom
+   "w k" 'evil-window-move-very-top
+   "w l" 'evil-window-move-far-right
+   "w /" 'evil-window-vsplit
+   "w -" 'evil-window-split)
+  (general-vmap
+    ">" 'sulami/evil-shift-right-visual
+    "<" 'sulami/evil-shift-left-visual)
+  :hook (after-init . evil-mode))
+
+(use-package evil-collection
+  :after (evil)
+  :config
+  (setq evil-collection-mode-list
+        (delete 'company evil-collection-mode-list))
+  (evil-collection-init))
+
+(use-package evil-org
+  :after org
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  :hook ((org-mode . evil-org-mode)))
+
+(use-package evil-search-highlight-persist
+  :config
+  (defun sulami/isearch-nohighlight ()
+    "Remove search highlights if not in the isearch minor mode."
+    (interactive)
+    (when (not isearch-mode)
+      (evil-search-highlight-persist-remove-all)))
+  :general
+  (general-nmap "RET" 'sulami/isearch-nohighlight)
+  :hook (evil-mode . global-evil-search-highlight-persist))
+
+(use-package evil-commentary
+  :hook (evil-mode . evil-commentary-mode))
+
+(use-package evil-surround
+  :hook (evil-mode . global-evil-surround-mode))
+#+END_SRC
+** Which key
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package which-key
+  :hook (after-init . which-key-mode))
+#+END_SRC
+** Ivy
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ivy
+  :init
+  (setq ivy-on-del-error-function #'ignore
+        ivy-count-format "(%d/%d) "
+        ivy-re-builders-alist '((counsel-projectile-find-file . ivy--regex-fuzzy)
+                                (counsel-apropos . ivy--regex-ignore-order)
+                                (t . ivy--regex-plus)))
+  :config
+  (defun sulami/ivy-with-thing-at-point (cmd)
+    "Runs an ivy command with the thing at point."
+    (let ((ivy-initial-inputs-alist
+           (list
+            (cons cmd (thing-at-point 'symbol)))))
+      (funcall cmd)))
+  :general
+  (:keymaps 'ivy-minibuffer-map
+   "C-w" 'ivy-backward-kill-word)
+  :hook (after-init . ivy-mode))
+
+(use-package counsel
+  :config/el-patch
+  ;; Patching counsel-apropos to skip the apropos step
+  (defun counsel-apropos ()
+  "Show all matching symbols.
+See `apropos' for further information on what is considered
+a symbol and how to search for them."
+  (interactive)
+  (ivy-read "Search for symbol (word list or regexp): " obarray
+            :predicate (lambda (sym)
+                         (or (fboundp sym)
+                             (boundp sym)
+                             (facep sym)
+                             (symbol-plist sym)))
+            :history 'counsel-apropos-history
+            :preselect (ivy-thing-at-point)
+            :action
+            (el-patch-swap
+              ;; Original
+              (lambda (pattern)
+                (when (string= pattern "")
+                  (user-error "Please specify a pattern"))
+                ;; If the user selected a candidate form the list, we use
+                ;; a pattern which matches only the selected symbol.
+                (if (memq this-command '(ivy-immediate-done ivy-alt-done))
+                    ;; Regexp pattern are passed verbatim, other input is
+                    ;; split into words.
+                    (if (string= (regexp-quote pattern) pattern)
+                        (apropos (split-string pattern "[ \t]+" t))
+                      (apropos pattern))
+                  (apropos (concat "\\`" pattern "\\'"))))
+              ;; Patch
+              (lambda (sym-name)
+                (helpful-symbol (intern-soft sym-name))))
+            :caller 'counsel-apropos))
+  :init
+  (defun sulami/imenu-goto-function (NAME POSITION &rest REST)
+    "Imenu goto function which pushes an evil jump position before
+    jumping."
+    (evil-set-jump)
+    (apply #'imenu-default-goto-function NAME POSITION REST))
+  (setq-default imenu-default-goto-function 'sulami/imenu-goto-function)
+  :general
+  (leader-def
+   "b b" 'counsel-switch-buffer
+   "f f" 'counsel-find-file
+   "f r" 'counsel-recentf
+   "h a" 'counsel-apropos
+   "j i" 'counsel-semantic-or-imenu)
+  (local-leader-def
+    :keymaps 'org-mode-map
+    "j" 'counsel-org-goto
+    "t" '(counsel-org-tag :wk "counsel-org-tag"))
+  (general-nmap
+    "M-y" 'counsel-yank-pop)
+  (general-imap
+    :keymaps 'shell-mode-map
+    "C-r" 'counsel-shell-history)
+  :hook (after-init . counsel-mode))
+
+(use-package swiper
+  :config
+  (defun sulami/swiper-thing-at-point ()
+    (interactive)
+    (sulami/ivy-with-thing-at-point 'swiper))
+  :general
+  (leader-def
+   "s s" 'swiper
+   "s S" 'sulami/swiper-thing-at-point))
+
+(use-package ivy-prescient
+  :hook (ivy-mode . ivy-prescient-mode)
+  :config
+  (prescient-persist-mode))
+
+(use-package ivy-xref
+  :defer t
+  :init (if (< emacs-major-version 27)
+            (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
+          (setq xref-show-definitions-function #'ivy-xref-show-defs)))
+
+(use-package flyspell-correct-ivy
+  :defer t
+  :init
+  (setq flyspell-correct-interface #'flyspell-correct-ivy)
+  :general
+  (leader-def
+    "s c" 'flyspell-correct-wrapper
+    ;; FIXME This doesn't work yet
+    "s C" '((lambda ()
+              (interactive)
+              (let ((current-prefix-arg 4))
+                (call-interactively 'flyspell-correct-wrapper)))
+            :wk "flyspell-correct-wrapper-rapid")))
+
+(use-package flx
+  :defer t)
+#+END_SRC
+** Company
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package company
+  :init
+  (setq company-idle-delay .01
+        company-global-modes '(not eshell-mode))
+  :general
+  (general-define-key
+   :keymaps 'company-active-map
+   "<tab>" 'company-complete-selection
+   "TAB" 'company-complete-selection
+   "<ret>" nil
+   "RET" nil
+   "C-n" 'company-select-next
+   "C-p" 'company-select-previous
+   "C-w" 'evil-delete-backward-word)
+  :hook (after-init . global-company-mode))
+
+(use-package company-prescient
+  :hook (company-mode . company-prescient-mode))
+#+END_SRC
+** Yasnippet
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package yasnippet
+  :config
+  (setq yas-snippet-dirs (add-to-list #'yas-snippet-dirs "/Users/sulami/.emacs/snippets/"))
+  :general
+  (:keymaps 'yas-minor-mode-map
+   "<tab>" nil
+   "TAB" nil
+   "<ret>" nil
+   "RET" nil)
+  :hook (after-init . yas-global-mode))
+
+(use-package ivy-yasnippet
+  :general
+  (general-imap "C-y" 'ivy-yasnippet))
+
+(use-package yasnippet-snippets
+  :defer t
+  :after (yasnippet))
+#+END_SRC
+** Parentheses
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package smartparens
+  :after (hydra)
+  :config
+  (require 'smartparens-config)
+  (defhydra hydra-wrap (:color blue)
+    "wrap"
+    ("(" sp-wrap-round)
+    ("[" sp-wrap-square)
+    ("{" sp-wrap-curly))
+  (defhydra hydra-lisp ()
+    "lisp"
+    ("s" sp-forward-slurp-sexp "slurp")
+    ("S" sp-backward-slurp-sexp "slurp backwards")
+    ("b" sp-forward-barf-sexp "barf")
+    ("B" sp-backward-barf-sexp "barf backwards")
+    ("w" hydra-wrap/body "wrap" :color blue)
+    ("." nil "quit" :color blue))
+  ;; Disable smartparens strict mode when there is a merge conflict
+  (add-hook 'smerge-mode-hook
+            (lambda ()
+              (smartparens-strict-mode -1)
+              (evil-cleverparens-mode -1)))
+  :general
+  (leader-def "k" 'hydra-lisp/body)
+  :hook (prog-mode . smartparens-global-mode))
+
+(use-package evil-cleverparens
+  :init
+  (setq evil-cleverparens-use-additional-movement-keys nil
+        evil-cleverparens-use-additional-bindings nil
+        evil-cleverparens-use-regular-insert t)
+  ;; Prevent evil-cleverparens from converting >/< to slurp/barf
+  (defun sulami/evil-cp-modify-regular-bindings (&rest r)
+    (setq evil-cp-regular-bindings
+          (remove-if (lambda (key-string)
+                       (member key-string '("_" ">" "<")))
+                     evil-cp-regular-bindings
+                     :key 'car)))
+  (advice-add 'evil-cp--enable-regular-bindings :before
+              #'sulami/evil-cp-modify-regular-bindings)
+  :hook (prog-mode . evil-cleverparens-mode))
+#+END_SRC
+** Dumb jump
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package dumb-jump
+  :after (evil)
+  :config
+  (setq dumb-jump-selector 'ivy
+        dumb-jump-force-searcher 'rg)
+  :general
+  (leader-def
+    "j j" (sulami/evil-set-jump-wrapper 'dumb-jump-go)
+    "j p" (sulami/evil-set-jump-wrapper 'dumb-jump-go-prompt)))
+#+END_SRC
+** Avy
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package avy
+  :general
+  (general-nvmap "s-n" 'avy-goto-word-or-subword-1))
+#+END_SRC
+** Highlight TODO
+#+begin_src emacs-lisp :tangle yes
+(use-package hl-todo
+  :defer t
+  :hook (after-init . global-hl-todo-mode))
+#+end_src
+** Highlight symbol
+I only enable this every now and then.
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package auto-highlight-symbol
+  :general
+  (leader-def "t h" 'auto-highlight-symbol-mode))
+#+END_SRC
+** Projectile
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package projectile
+  :init
+  (setq projectile-completion-system 'ivy)
+  :config
+  (defun sulami/projectile-replace ()
+    "Search and replace in the whole project."
+    (interactive)
+    (dired (projectile-project-root) "-alR")
+    (let ((file-regex (read-string "Select files with regex: "))
+          (from (read-string "Search for: "))
+          (to (read-string "Replace with: ")))
+      (dired-mark-files-regexp file-regex)
+      (dired-do-find-regexp-and-replace from to))
+    (projectile-save-project-buffers)
+    (with-current-buffer "*xref*"
+      (kill-buffer-and-window))
+    ; last open file
+    (delete-window)
+    ; cleanup dired
+    (dired-unmark-all-marks)
+    (kill-buffer))
+
+  (defun sulami/toggle-project-root-shell ()
+    "Opens eshell, if possible in the project root."
+    (interactive)
+    (if (eq major-mode 'eshell-mode)
+        (evil-switch-to-windows-last-buffer)
+      (if (projectile-project-p)
+          (let* ((eshell-buffer-name (concat "*eshell-" (projectile-project-name) "*")))
+            (projectile-with-default-dir (projectile-project-root)
+              (eshell)))
+        (eshell))))
+
+  ;; Don't do projectile stuff on remote files
+  ;; from https://github.com/syl20bnr/spacemacs/issues/11381#issuecomment-481239700
+  (defadvice projectile-project-root (around ignore-remote first activate)
+    (unless (file-remote-p default-directory) ad-do-it))
+
+  :general
+  (leader-def
+    "p r" 'sulami/projectile-replace
+    "p d" 'projectile-dired)
+  ("s-'" 'sulami/toggle-project-root-shell)
+  :hook (after-init . projectile-global-mode))
+
+(use-package counsel-projectile
+  :defer t
+  :config
+  (defun sulami/projectile-rg-thing-at-point ()
+    (interactive)
+    (let ((counsel-projectile-rg-initial-input (thing-at-point 'symbol)))
+      (counsel-projectile-rg)))
+  :general
+  (leader-def
+   "p b" 'counsel-projectile-switch-to-buffer
+   "p f" 'counsel-projectile-find-file
+   "s p" 'counsel-projectile-rg
+   "s P" 'sulami/projectile-rg-thing-at-point))
+
+#+END_SRC
+** Perspective
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package perspective
+  :config
+  (setq persp-show-modestring nil)
+  :general
+  (leader-def
+    "p l" 'persp-switch)
+  :hook (after-init . persp-mode))
+
+(use-package persp-projectile
+  :defer t
+  :after (perspective)
+  :init
+  (defun sulami/kill-project-perspective ()
+    "Kills the current project and then the perspective."
+    (interactive)
+    (when (projectile-project-p)
+      (projectile-kill-buffers))
+    (let ((pname (persp-name (persp-curr))))
+      (when (and (not (eq "main" pname))
+                 (yes-or-no-p (format "Kill perspective %s?"pname)))
+        (persp-kill pname)
+        (message "Killed perspective %s" pname))))
+  :general
+  (leader-def
+    "p p" 'projectile-persp-switch-project
+    "p k" 'sulami/kill-project-perspective))
+#+END_SRC
+** Winum
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package winum
+  :general
+  ("s-1" 'winum-select-window-1
+   "s-2" 'winum-select-window-2
+   "s-3" 'winum-select-window-3
+   "s-4" 'winum-select-window-4
+   "s-5" 'winum-select-window-5
+   "s-6" 'winum-select-window-6
+   "s-7" 'winum-select-window-7
+   "s-8" 'winum-select-window-8
+   "s-9" 'winum-select-window-9)
+  :hook (after-init . winum-mode))
+#+END_SRC
+** Fill column indicator
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package fill-column-indicator
+  :general
+  (leader-def "t i" 'fci-mode))
+#+END_SRC
+** Focus
+#+begin_src emacs-lisp :tangle yes
+(use-package focus
+  :general
+  (leader-def "t f" 'focus-mode))
+#+end_src
+** Darkroom
+#+begin_src emacs-lisp :tangle yes
+(use-package darkroom
+  :disabled
+  :general
+  (leader-def "t d" 'darkroom-tentative-mode))
+#+end_src
+** Magit
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package magit
+  :custom
+  (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+  :config
+  (defun sulami/magit-pull-master ()
+    (interactive)
+    (magit-git-command-topdir "git pull origin master:master"))
+  (transient-append-suffix 'magit-pull "e" '(sulami/magit-pull-master
+                                             :key "m"
+                                             :description "Pull master"))
+  (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell)
+  :general
+  (leader-def
+    "g b" 'magit-blame-addition
+    "g s" 'magit-status)
+  :init
+  (setq magit-completing-read-function 'ivy-completing-read))
+
+(use-package evil-magit
+  :defer t
+  :hook (magit-mode . (lambda () (require 'evil-magit))))
+
+(use-package git-link
+  :init
+  (defun open-git-link-in-browser ()
+    (interactive)
+    (let ((git-link-open-in-browser t))
+      (git-link "origin" (line-number-at-pos) (line-number-at-pos))))
+  (defun open-git-repo-in-browser ()
+    (interactive)
+    (let ((git-link-open-in-browser t))
+      (git-link-homepage "origin")))
+  :general
+  (leader-def
+   "g l" 'git-link
+   "g L" 'open-git-link-in-browser
+   "g r" 'git-link-homepage
+   "g R" 'open-git-repo-in-browser))
+#+END_SRC
+** Flycheck
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package flycheck
+  :config
+  ;; Disable flycheck on-the-fly-checking if the line count exceeds 2000.
+  (setq flycheck-check-syntax-automatically
+        (if (> (sulami/buffer-line-count) 2000)
+            (delete 'idle-change flycheck-check-syntax-automatically)
+          (add-to-list 'flycheck-check-syntax-automatically 'idle-change)))
+  :general
+  (leader-def "t c" 'flycheck-mode)
+  :hook (clojure-mode . flycheck-mode))
+#+END_SRC
+** Elisp
+#+begin_src emacs-lisp :tangle yes
+(local-leader-def
+  :keymaps 'emacs-lisp-mode-map
+  "e" '(:ignore t :wk "eval")
+  "e b" 'eval-buffer
+  "e e" 'eval-sexp
+  "e f" 'eval-defun
+  "e r" 'eval-region)
+#+end_src
+** Eshell
+*** Aliases
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq eshell-aliases-file "~/.emacs/aliases")
+#+END_SRC
+*** Completion
+Eshell doesn't do context-aware autocompletion by default and defaults
+to completing filenames instead. Luckily we can easily define custom
+completion handlers for commands.
+**** Sudo
+#+begin_src emacs-lisp :tangle yes
+(defun pcomplete/sudo ()
+  "Completion rules for the `sudo' command."
+  (let ((pcomplete-ignore-case t))
+    (pcomplete-here (funcall pcomplete-command-completion-function))
+    (while (pcomplete-here (pcomplete-entries)))))
+#+end_src
+** Ediff
+*** Ignore whitespace changes
+#+begin_src emacs-lisp :tangle yes
+(setq ediff-diff-options "-w")
+#+end_src
+*** Don't create a new frame for the control window
+#+begin_src emacs-lisp :tangle yes
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+#+end_src
+*** Split horizontally by default
+#+begin_src emacs-lisp :tangle yes
+(setq ediff-split-window-function 'split-window-horizontally)
+#+end_src
+** Dired
+*** Enable find-alternate-file
+#+begin_src emacs-lisp :tangle yes
+(put 'dired-find-alternate-file 'disabled nil)
+#+end_src
+** Helpful
+#+begin_src emacs-lisp :tangle yes
+(use-package helpful
+  :commands (helpful-symbol helpful-key)
+  :general
+  (leader-def
+    "h k" 'helpful-key))
+#+end_src
+** Esup
+This allows me to benchmark Emacs startup.
+#+begin_src emacs-lisp :tangle yes
+(use-package esup
+  :disabled)
+#+end_src
+** Restclient
+#+begin_src emacs-lisp :tangle yes
+(use-package restclient
+  :mode (("\\.http\\'" . restclient-mode))
+  :general
+  (local-leader-def
+    :keymaps 'restclient-mode-map
+    "c" 'restclient-copy-curl-command
+    "r" 'restclient-http-send-current-raw
+    "s" 'restclient-http-send-current-stay-in-window
+    "S" 'restclient-http-send-current))
+#+end_src
+** Atomic
+#+begin_src emacs-lisp :tangle yes
+(use-package atomic-chrome
+  :init
+  (setq atomic-chrome-default-major-mode 'markdown-mode
+        atomic-chrome-buffer-open-style 'frame)
+  :general
+  (local-leader-def
+    :keymaps 'atomic-chrome-edit-mode-map
+    "q" 'atomic-chrome-close-current-buffer)
+  :hook ((after-init . atomic-chrome-start-server)
+         (atomic-chrome-edit-done . delete-frame)))
+#+end_src
+** LSP
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package lsp-mode
+  :disabled
+  :defer t
+  :commands lsp
+  :config
+  (add-to-list 'lsp-language-id-configuration '(clojure-mode . "clojure-mode"))
+  :init
+  (setq lsp-enable-indentation nil)
+  :general
+  (leader-def
+    "l f" 'lsp-format-region
+    "l F" 'lsp-format-buffer
+    "l j" 'lsp-goto-implementation
+    "l q" 'lsp-shutdown-workspace
+    "l r" 'lsp-rename
+    "l R" 'lsp-restart-workspace
+    "l u" 'lsp-find-references))
+
+(use-package company-lsp
+  :disabled
+  :defer t
+  :commands company-lsp)
+
+(use-package lsp-ui
+  :disabled
+  :defer t
+  :commands lsp-ui-mode)
+#+END_SRC
+** Clojure
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package clojure-mode
+  :defer t)
+
+(use-package cider
+  :defer t
+  :hook (clojure-mode . cider-mode)
+  :init
+  (setq cider-auto-mode nil)
+  :config
+  (defun sulami/cider-debug-defun-at-point ()
+    "Set an implicit breakpoint and load the function at point."
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively 'cider-eval-defun-at-point)))
+  :general
+  (local-leader-def
+    :keymaps 'clojure-mode-map
+    "c" 'cider-connect
+    "j" 'cider-jack-in
+    "q" 'cider-quit
+    "s" 'cider-scratch
+    "x" 'cider-ns-reload-all
+    "e" '(:ignore t :wk "eval")
+    "e b" 'cider-eval-buffer
+    "e d" 'sulami/cider-debug-defun-at-point
+    "e e" 'cider-eval-last-sexp
+    "e f" 'cider-eval-defun-at-point
+    "e r" 'cider-eval-region
+    "h" '(:ignore t :wk "help")
+    "h a" 'cider-apropos
+    "h A" 'cider-apropos-documentation
+    "h d" 'cider-doc
+    "h i" 'cider-inspect-last-result
+    "h w" 'cider-docview-clojuredocs-web
+    "r" '(:ignore t :wk "repl")
+    "r f" 'cider-insert-defun-in-repl
+    "r n" 'cider-repl-set-ns
+    "r r" 'cider-switch-to-repl-buffer
+    "t" '(:ignore t :wk "test")
+    "t b" 'cider-test-show-report
+    "t f" 'cider-test-rerun-failed-tests
+    "t l" 'cider-test-run-loaded-tests
+    "t n" 'cider-test-run-ns-tests
+    "t p" 'cider-test-run-project-tests
+    "t t" 'cider-test-run-test))
+
+(use-package flycheck-clj-kondo
+  :defer t
+  :hook (clojure-mode . (lambda () (require 'flycheck-clj-kondo))))
+
+;; TODO this should probably go somewhere else, if anywhere
+(defun sulami/clojure-thread-last ()
+  "Unwraps an onion of functions into a thread-last macro.
+
+Place point on the outer-most opening parenthesis to start:
+|(f (g (h x))) => (->> x (h) (g) (f))"
+  (interactive)
+  (let ((start (point))
+        (depth 0))
+
+    (while (let ((pos (point)))
+             (sp-down-sexp)
+             (not (= pos (point))))
+      (setq depth (+ 1 depth)))
+
+    (goto-char start)
+    (sp-down-sexp)
+
+    (--dotimes depth
+      (sp-forward-barf-sexp)
+      (left-char)
+      (sp-kill-sexp)
+      (right-char))
+
+    (re-search-forward "\n" nil t)
+    (left-char)
+
+    (--each (-take depth kill-ring)
+      (insert (format " %s" it)))
+
+    (goto-char start)
+    (insert "(->>) ")
+    (goto-char (+ 1 start))
+    (sp-forward-slurp-sexp (+ 1 depth))
+    (goto-char start)))
+#+END_SRC
+** Haskell
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package haskell-mode
+  :defer t)
+
+;;; Fix indentation when using o/O in Haskell
+;(defun haskell-evil-open-above ()
+;  (interactive)
+;  (evil-digit-argument-or-evil-beginning-of-line)
+;  (haskell-indentation-newline-and-indent)
+;  (evil-previous-line)
+;  (haskell-indentation-indent-line)
+;  (evil-append-line nil))
+;
+;(defun haskell-evil-open-below ()
+;  (interactive)
+;  (evil-append-line nil)
+;  (haskell-indentation-newline-and-indent))
+;
+;(evil-define-key 'normal haskell-mode-map
+;  "o" 'haskell-evil-open-below
+;  "O" 'haskell-evil-open-above)
+#+END_SRC
+** Rust
+#+begin_src emacs-lisp :tangle yes
+(use-package rust-mode
+  :defer t)
+#+end_src
+** Markdown
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package markdown-mode
+  :config
+  (add-hook 'markdown-mode-hook 'orgtbl-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)))
+#+END_SRC
+** YAML
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package yaml-mode
+  :defer t)
+#+END_SRC
+** JSON
+#+begin_src emacs-lisp :tangle yes
+;; Indent by 2 spaces, if we ever get there
+(setq js2-basic-offset 2)
+#+end_src
+** Protobuf
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package protobuf-mode
+  :defer t)
+#+END_SRC
+** Done
+#+BEGIN_SRC emacs-lisp :tangle yes
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (let ((pkg-count (length (hash-table-keys straight--success-cache)))
+                  (startup-time (float-time (time-subtract after-init-time before-init-time))))
+              (message (format "Startup complete, loaded %d packages in %.2fs"
+                               pkg-count
+                               startup-time)))))
+#+END_SRC
+** TODO Split up headings
+** TODO emacsclient setup
+I'd like to have emacsclient open in a new, clean frame, and clean up
+upon termination.
