@@ -424,6 +424,18 @@ Weeks start on Monday, and who thought MDY was a good idea?
   "Open the message buffer."
   (interactive)
   (switch-to-buffer "*Messages*"))
+
+(defun pfif/switch-to-tasklist ()
+    (interactive)
+    (persp-switch "~/tasklist/")
+    (find-file "~/tasklist/taskslist.org"))
+
+(defun pfif/switch-to-local-tasklist ()
+    (interactive)
+    (let ((persp-reset-windows-on-nil-window-conf t))
+      (persp-switch "~/local_tasklist/")
+      (find-file "~/local_tasklist/local_tasklist.org"))
+    )
 #+END_SRC
 **** Buffer line count
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -537,6 +549,7 @@ declarations.
     "t" '(:ignore t :wk "toggle")
     "w" '(:ignore t :wk "window")
     ;; General keybinds
+    "SPC" 'counsel-M-x
     "\\" 'indent-region
     "|" 'sulami/shell-command-on-region
     "a a" 'org-agenda
@@ -561,6 +574,8 @@ declarations.
     "h g" 'general-describe-keybindings
     "h l" 'view-lossage
     "h v" 'describe-variable
+    "p w" 'pfif/switch-to-local-tasklist
+    "p q" 'pfif/switch-to-tasklist
     "t l" 'toggle-truncate-lines
     "t r" 'refill-mode
     "t s" 'flyspell-mode
@@ -634,10 +649,6 @@ declarations.
    "TAB" 'evil-switch-to-windows-last-buffer
    "<tab>" 'evil-switch-to-windows-last-buffer
    "w d" 'evil-window-delete
-   "w h" 'evil-window-move-far-left
-   "w j" 'evil-window-move-very-bottom
-   "w k" 'evil-window-move-very-top
-   "w l" 'evil-window-move-far-right
    "w /" 'evil-window-vsplit
    "w -" 'evil-window-split)
   (general-vmap
@@ -870,21 +881,7 @@ a symbol and how to search for them."
   (leader-def "k" 'hydra-lisp/body)
   :hook (prog-mode . smartparens-global-mode))
 
-(use-package evil-cleverparens
-  :init
-  (setq evil-cleverparens-use-additional-movement-keys nil
-        evil-cleverparens-use-additional-bindings nil
-        evil-cleverparens-use-regular-insert t)
-  ;; Prevent evil-cleverparens from converting >/< to slurp/barf
-  (defun sulami/evil-cp-modify-regular-bindings (&rest r)
-    (setq evil-cp-regular-bindings
-          (remove-if (lambda (key-string)
-                       (member key-string '("_" ">" "<")))
-                     evil-cp-regular-bindings
-                     :key 'car)))
-  (advice-add 'evil-cp--enable-regular-bindings :before
-              #'sulami/evil-cp-modify-regular-bindings)
-  :hook (prog-mode . evil-cleverparens-mode))
+
 #+END_SRC
 ** Dumb jump
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -892,17 +889,19 @@ a symbol and how to search for them."
   :after (evil)
   :config
   (setq dumb-jump-selector 'ivy
-        dumb-jump-force-searcher 'rg)
+        dumb-jump-force-searcher 'ag)
   :general
   (leader-def
-    "j j" (sulami/evil-set-jump-wrapper 'dumb-jump-go)
+    "j k" (sulami/evil-set-jump-wrapper 'dumb-jump-go)
     "j p" (sulami/evil-set-jump-wrapper 'dumb-jump-go-prompt)))
 #+END_SRC
 ** Avy
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package avy
   :general
-  (general-nvmap "s-n" 'avy-goto-word-or-subword-1))
+  (leader-def
+    "j j" 'avy-goto-word-or-subword-1
+    "j l" 'avy-goto-line))
 #+END_SRC
 ** Highlight TODO
 #+begin_src emacs-lisp :tangle yes
@@ -956,6 +955,9 @@ I only enable this every now and then.
   ;; from https://github.com/syl20bnr/spacemacs/issues/11381#issuecomment-481239700
   (defadvice projectile-project-root (around ignore-remote first activate)
     (unless (file-remote-p default-directory) ad-do-it))
+
+  (setq projectile-switch-project-action
+        (lambda () (find-file (concat (projectile-project-root) "README.md"))))
 
   :general
   (leader-def
@@ -1084,6 +1086,7 @@ I only enable this every now and then.
    "g R" 'open-git-repo-in-browser))
 #+END_SRC
 ** Flycheck
+:config
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package flycheck
   :config
@@ -1094,7 +1097,8 @@ I only enable this every now and then.
           (add-to-list 'flycheck-check-syntax-automatically 'idle-change)))
   :general
   (leader-def "t c" 'flycheck-mode)
-  :hook (clojure-mode . flycheck-mode))
+  :hook ((clojure-mode . flycheck-mode)
+         (python-mode . flycheck-mode)))
 #+END_SRC
 ** Elisp
 #+begin_src emacs-lisp :tangle yes
@@ -1325,6 +1329,25 @@ Place point on the outer-most opening parenthesis to start:
 #+begin_src emacs-lisp :tangle yes
 (use-package rust-mode
   :defer t)
+#+end_src
+** Python
+#+begin_src emacs-lisp :tangle yes
+(use-package elpy
+  :config
+  (defun pfif/run-all-tests-elpy ()
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively 'elpy-test))
+    )
+  :general
+  (local-leader-def
+    :keymaps 'python-mode-map
+    "t" '(:ignore t :wk "test")
+    "t t" 'elpy-test
+    "t a" 'pfif/run-all-tests-elpy
+    "v" '(:ignore t :wk "virtual environment")
+    "v w" 'pyvenv-workon
+))
 #+end_src
 ** Markdown
 #+BEGIN_SRC emacs-lisp :tangle yes
