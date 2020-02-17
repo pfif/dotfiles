@@ -338,10 +338,15 @@ of another theme."
 #+end_src
 *** Agenda
 #+begin_src emacs-lisp :tangle yes
-(setq org-directory "~/Documents/Notes/"
-      org-agenda-files (list org-directory
+(setq
+org-agenda-files (list "~/local_tasklist/local_tasklist.org"
                              "~/.emacs/README.org")
-      org-agenda-tag-filter-preset '("-archived" "-noagenda"))
+org-agenda-tag-filter-preset '("-archived" "-noagenda"))
+
+;;(add-hook 'org-agenda-mode-hook (lambda ()
+;;                                  (define-key org-agenda-mode-map (kbd "SPC") nil)
+;;                                  (define-key org-agenda-keymap (kbd "SPC") nil)
+;;                                  ))
 #+end_src
 *** Capture
 #+begin_src emacs-lisp :tangle yes
@@ -530,7 +535,7 @@ declarations.
   (defconst local-leader-key ",")
   (general-create-definer local-leader-def
     :prefix local-leader-key
-    :keymaps 'override
+    :keymaps 'local
     :states '(normal visual))
   (leader-def
     "" '(nil :wk "my lieutenant general prefix")
@@ -592,7 +597,7 @@ declarations.
   (local-leader-def
     :keymaps 'org-mode-map
     :states '(normal)
-    "a" 'org-archive-subtree
+    "a" 'org-agenda
     "d" 'org-deadline
     "f" 'org-fill-paragraph
     "l" 'org-insert-link
@@ -891,7 +896,13 @@ a symbol and how to search for them."
   (setq dumb-jump-selector 'ivy
         dumb-jump-force-searcher 'ag)
   :general
-  (leader-def
+  ;; I am using general-define-key instead of leader-def here, because
+  ;; leader-def writes to the "override" keymap, which cannot be overriden
+  ;; The override keymap cannot be overriden, but I want to be able to
+  ;; override dumb jump with program specific programs
+  (general-define-key
+   :states '(normal)
+   :prefix leader-key
     "j k" (sulami/evil-set-jump-wrapper 'dumb-jump-go)
     "j p" (sulami/evil-set-jump-wrapper 'dumb-jump-go-prompt)))
 #+END_SRC
@@ -1098,6 +1109,7 @@ I only enable this every now and then.
   :general
   (leader-def "t c" 'flycheck-mode)
   :hook ((clojure-mode . flycheck-mode)
+         (go-mode . flycheck-mode)
          (python-mode . flycheck-mode)))
 #+END_SRC
 ** Elisp
@@ -1333,12 +1345,21 @@ Place point on the outer-most opening parenthesis to start:
 ** Python
 #+begin_src emacs-lisp :tangle yes
 (use-package elpy
+  :defer t
+  :hook (python-mode . elpy-enable)
   :config
   (defun pfif/run-all-tests-elpy ()
     (interactive)
     (let ((current-prefix-arg '(4)))
       (call-interactively 'elpy-test))
     )
+  (defun pfif/pyvenv-workon ()
+    (flycheck-reset-enabled-checker 'python-flake8)
+    (flycheck-reset-enabled-checker 'python-mypy)
+    )
+  (add-hook 'pyvenv-post-deactivate-hooks 'pfif/pyvenv-workon)
+  (elpy-shell-toggle-dedicated-shell 1)
+
   :general
   (local-leader-def
     :keymaps 'python-mode-map
@@ -1347,13 +1368,74 @@ Place point on the outer-most opening parenthesis to start:
     "t a" 'pfif/run-all-tests-elpy
     "v" '(:ignore t :wk "virtual environment")
     "v w" 'pyvenv-workon
+    "s" '(:ignore t :wk "Shell")
+    "s r" 'elpy-shell-switch-to-shell
+    "s k" 'elpy-shell-kill
+    "r" '(:ignore t :wk "Run")
+    "r b" 'elpy-shell-send-region-or-buffer
+    "d" '(:ignore t :wk "Docs")
+    "d d" 'elpy-doc
 ))
+#+end_src
+** Golang
+#+begin_src emacs-lisp :tangle yes
+(use-package go-mode
+  :general
+  (leader-def 'go-mode-map
+    "j k" 'godef-jump)
+  (local-leader-def 'go-mode-map
+    "r" '(:ignore t :wk "Run")
+    "r b" 'elpy-shell-send-region-or-buffer
+    "d" '(:ignore t :wk "Docs")
+    "d d" 'godoc-at-point
+    "d a" 'godoc
+    )
+  :hook (before-save . gofmt-before-save)
+  )
+
+(use-package gotest
+  :config/el-patch
+  (defun go-test-current-project ()
+  "Launch go test on the current project."
+  (interactive)
+  (if (go-test--is-gb-project)
+      (go-test--gb-start "all -test.v=true")
+    (let ((packages (cl-remove-if (lambda (s) (s-contains? "/vendor/" s))
+                                  (s-split "\n"
+                                           (shell-command-to-string (el-patch-swap
+                                                                      ;; Original
+                                                                      "go list ./..."
+                                                                      ;; Replacement
+                                                                      (format "go list %s/..." (projectile-project-root))
+                                                                      ))))))
+      (go-test--go-test (s-join " " packages)))))
+  :general
+  (local-leader-def 'go-mode-map
+    "t" '(:ignore t :wk "test")
+    "t t" 'go-test-current-test
+    "t a" 'go-test-current-project
+    ))
+
+(use-package go-rename
+  :general
+  (local-leader-def 'go-mode-map
+    "r" '(:ignore t :wk "refactor")
+    "r r" 'go-rename)
+    )
 #+end_src
 ** Markdown
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package markdown-mode
   :config
   (add-hook 'markdown-mode-hook 'orgtbl-mode)
+  ;; :general
+  ;; (local-leader-def
+  ;;   :keymap markdown-mode-map
+  ;;   "i" 'markdown-insert-italic
+  ;;   "b" 'markdown-insert-bold
+  ;;   "c" 'markdown-insert-code
+  ;;   "p" 'markdown-preview
+  ;;   )
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)))
 #+END_SRC
@@ -1362,6 +1444,10 @@ Place point on the outer-most opening parenthesis to start:
 (use-package yaml-mode
   :defer t)
 #+END_SRC
+** Docker
+#+begin_src emacs-lisp :tangle yes
+(use-package dockerfile-mode)
+#+end_src
 ** JSON
 #+begin_src emacs-lisp :tangle yes
 ;; Indent by 2 spaces, if we ever get there
