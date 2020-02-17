@@ -393,6 +393,7 @@ Weeks start on Monday, and who thought MDY was a good idea?
 (defun sulami/open-emacs-config ()
   "Opens the config file for our favourite OS."
   (interactive)
+  (persp-switch "~/.emacs.d/")
   (find-file sulami/emacs-config-file))
 #+END_SRC
 **** Reload this file
@@ -969,6 +970,18 @@ I only enable this every now and then.
 
   (setq projectile-switch-project-action
         (lambda () (find-file (concat (projectile-project-root) "README.md"))))
+
+  (defun pfif/add-known-projects-in-default-directories ()
+    "A function to easily add most of the project on my computer to the known repositories"
+    (interactive)
+    (let*
+        ((directories (list "~/Documents/company_projects" "~/Documents/external_projects/" "~/Documents/personal_projects"))
+         (directory-content (seq-reduce (lambda (content directory) (seq-concatenate 'list content (directory-files directory t))) directories (list)))
+         (subfolders (seq-filter 'file-directory-p directory-content))
+         (subfolders-without-dot (seq-filter (lambda (a) (not (string-match-p (regexp-quote ".") a))) subfolders)))
+      (seq-map (lambda (a) (projectile-add-known-project a)) subfolders-without-dot)
+      )
+    )
 
   :general
   (leader-def
