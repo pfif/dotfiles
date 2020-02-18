@@ -1409,24 +1409,26 @@ Place point on the outer-most opening parenthesis to start:
 (use-package gotest
   :config/el-patch
   (defun go-test-current-project ()
-  "Launch go test on the current project."
-  (interactive)
-  (if (go-test--is-gb-project)
-      (go-test--gb-start "all -test.v=true")
-    (let ((packages (cl-remove-if (lambda (s) (s-contains? "/vendor/" s))
-                                  (s-split "\n"
-                                           (shell-command-to-string (el-patch-swap
-                                                                      ;; Original
-                                                                      "go list ./..."
-                                                                      ;; Replacement
-                                                                      (format "go list %s/..." (projectile-project-root))
-                                                                      ))))))
-      (go-test--go-test (s-join " " packages)))))
+    "Launch go test on the current project."
+    (interactive)
+    (if (go-test--is-gb-project)
+        (go-test--gb-start "all -test.v=true")
+      (let ((packages (cl-remove-if (lambda (s) (s-contains? "/vendor/" s))
+                                    (s-split "\n"
+                                             (shell-command-to-string (el-patch-swap
+                                                                        ;; Original
+                                                                        "go list ./..."
+                                                                        ;; Replacement
+                                                                        (format "go list %s/..." (projectile-project-root))
+                                                                        ))))))
+        (go-test--go-test (s-join " " packages)))))
+
   :general
   (local-leader-def 'go-mode-map
     "t" '(:ignore t :wk "test")
     "t t" 'go-test-current-test
     "t a" 'go-test-current-project
+    "t f" 'go-test-current-file
     ))
 
 (use-package go-rename
