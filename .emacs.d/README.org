@@ -221,7 +221,6 @@ Set the font to Fira Code and enable ligatures.
 (let ((font "Fira Code 14"))
   (set-face-attribute 'default nil :font font)
   (set-frame-font font nil t))
-(mac-auto-operator-composition-mode)
 #+END_SRC
 *** Theme
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -1395,7 +1394,8 @@ Place point on the outer-most opening parenthesis to start:
 (use-package go-mode
   :general
   (leader-def 'go-mode-map
-    "j k" 'godef-jump)
+    "j k" 'godef-jump
+    "j K" 'godef-jump-other-window)
   (local-leader-def 'go-mode-map
     "r" '(:ignore t :wk "Run")
     "r b" 'elpy-shell-send-region-or-buffer
