@@ -338,14 +338,9 @@ of another theme."
 *** Agenda
 #+begin_src emacs-lisp :tangle yes
 (setq
-org-agenda-files (list "~/local_tasklist/local_tasklist.org"
-                             "~/.emacs/README.org")
-org-agenda-tag-filter-preset '("-archived" "-noagenda"))
-
-;;(add-hook 'org-agenda-mode-hook (lambda ()
-;;                                  (define-key org-agenda-mode-map (kbd "SPC") nil)
-;;                                  (define-key org-agenda-keymap (kbd "SPC") nil)
-;;                                  ))
+ org-agenda-files (list "~/local_tasklist/local_tasklist.org"
+                        "~/.emacs.d/README.org")
+ org-agenda-tag-filter-preset '("-archived" "-noagenda"))
 #+end_src
 *** Capture
 #+begin_src emacs-lisp :tangle yes
