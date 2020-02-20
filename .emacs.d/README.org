@@ -1031,6 +1031,8 @@ I only enable this every now and then.
 ** Winum
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package winum
+  :config
+  (setq winum-scope 'frame-local)
   :general
   ("s-1" 'winum-select-window-1
    "s-2" 'winum-select-window-2
