@@ -351,8 +351,12 @@ of another theme."
 #+begin_src emacs-lisp :tangle yes
 (setq
  org-agenda-files (list "~/local_tasklist/local_tasklist.org"
-                        "~/.emacs.d/README.org")
+                        "~/local_tasklist/local_tasklist_longterm.org")
  org-agenda-tag-filter-preset '("-archived" "-noagenda"))
+
+(setq org-agenda-custom-commands '(("q" "Florent's Custom View"
+                                    ((agenda "" ((org-agenda-span 1)))
+                                     (tags-todo "longtermtask")))))
 #+end_src
 *** Capture
 #+begin_src emacs-lisp :tangle yes
@@ -907,9 +911,7 @@ a symbol and how to search for them."
   ;; leader-def writes to the "override" keymap, which cannot be overriden
   ;; The override keymap cannot be overriden, but I want to be able to
   ;; override dumb jump with program specific programs
-  (general-define-key
-   :states '(normal)
-   :prefix leader-key
+  (local-leader-def 'python-mode
     "j k" (sulami/evil-set-jump-wrapper 'dumb-jump-go)
     "j p" (sulami/evil-set-jump-wrapper 'dumb-jump-go-prompt)))
 #+END_SRC
@@ -918,6 +920,7 @@ a symbol and how to search for them."
 (use-package avy
   :general
   (leader-def
+    "j J" 'avy-goto-char
     "j j" 'avy-goto-word-or-subword-1
     "j l" 'avy-goto-line))
 #+END_SRC
@@ -1220,28 +1223,34 @@ This allows me to benchmark Emacs startup.
 ** LSP
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package lsp-mode
-  :defer t
-  :commands lsp
   :config
-  (add-to-list 'lsp-language-id-configuration '(dart-mode . "dart-mode"))
-  :init
-  (setq lsp-enable-indentation nil)
+  (defun pfif/auto-format-on-save ()
+    (when (equal major-mode 'go-mode)
+      (lsp-format-buffer)))
+  (add-hook 'before-save-hook 'pfif/auto-format-on-save)
+
+  (setq lsp-ui-doc-enable nil)
+  :hook ((go-mode . lsp))
   :general
-  (leader-def
-    "l f" 'lsp-format-region
-    "l F" 'lsp-format-buffer
-    "l j" 'lsp-goto-implementation
+  (local-leader-def 'lsp-mode-map
+    "r" '(:ignore t :wk "rename")
+    "r r" 'lsp-rename
+    "j" '(:ignore t :wk "jump")
+    "j k" 'lsp-find-definition
+    "j K" 'lsp-ui-peek-find-definitions
+    "j r" 'lsp-ui-peek-find-references
+    "j R" 'lsp-find-references
+    "d" '(:ignore t :wk "docs")
+    "d d" 'lsp-describe-thing-at-point
+    "l" '(:ignore t :wk "lsp")
     "l q" 'lsp-shutdown-workspace
-    "l r" 'lsp-rename
-    "l R" 'lsp-restart-workspace
-    "l u" 'lsp-find-references))
+    "l R" 'lsp-restart-workspace))
 
-(use-package company-lsp :defer t
-  :commands company-lsp)
+(use-package company-lsp)
 
-(use-package lsp-ui
-  :defer t
-  :commands lsp-ui-mode)
+(use-package lsp-ui)
+(use-package lsp-ivy)
+(use-package lsp-treemacs)
 #+END_SRC
 ** Clojure
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -1402,17 +1411,10 @@ Place point on the outer-most opening parenthesis to start:
 #+begin_src emacs-lisp :tangle yes
 (use-package go-mode
   :general
-  (leader-def 'go-mode-map
-    "j k" 'godef-jump
-    "j K" 'godef-jump-other-window)
   (local-leader-def 'go-mode-map
-    "r" '(:ignore t :wk "Run")
-    "r b" 'elpy-shell-send-region-or-buffer
-    "d" '(:ignore t :wk "Docs")
-    "d d" 'godoc-at-point
-    "d a" 'godoc
+    "e" '(:ignore t :wk "Exec")
+    "e b" 'go-run
     )
-  :hook (before-save . gofmt-before-save)
   )
 
 (use-package gotest
@@ -1439,13 +1441,6 @@ Place point on the outer-most opening parenthesis to start:
     "t a" 'go-test-current-project
     "t f" 'go-test-current-file
     ))
-
-(use-package go-rename
-  :general
-  (local-leader-def 'go-mode-map
-    "r" '(:ignore t :wk "refactor")
-    "r r" 'go-rename)
-    )
 #+end_src
 ** Markdown
 #+BEGIN_SRC emacs-lisp :tangle yes
