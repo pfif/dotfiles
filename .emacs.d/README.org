@@ -18,7 +18,10 @@ the top for performance reasons.
 This way we lose everything backups if the whole machine crashes, but
 we don't accidentally leave backups around.
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq backup-directory-alist '(("." . "/tmp/emacs-backup")))
+(setq backup-directory-alist '(("." . "/tmp/"))
+      auto-save-file-name-transforms '((".*" "/tmp/" t))
+      create-lockfiles nil
+)
 #+END_SRC
 *** No trash
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -302,6 +305,10 @@ of another theme."
         doom-modeline-vcs-max-length 36))
 #+END_SRC
 ** Org mode
+*** Default directory
+#+begin_src emacs-lisp :tangle yes
+(setq org-directory "~/local_tasklist/")
+#+end_src
 *** Plain source code blocks
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq org-src-preserve-indentation nil
@@ -362,15 +369,12 @@ of another theme."
 #+begin_src emacs-lisp :tangle yes
 (setq org-capture-templates
       '(("t" "Todo" entry
-         (file "inbox.org")
-         "* TODO %?\n%u")
-        ("f" "File" entry
-         (file "inbox.org")
-         "* TODO %?\n%a")
-        ("c" "Climbing journal" entry
-         (file "climbing.org")
-         "* %u\n%?"
-         :prepend t)))
+         (file+headline "local_tasklist.org" "Inbox")
+         "* TODO %?")
+        ("w" "Work item" entry
+         (file+headline "local_tasklist_longterm.org" "Long term tasks")
+         "* TODO %^{Ticket title}\n %^{Ticket URL}")
+))
 #+end_src
 *** Refile
 This allows me to refile from the GTD inbox to the top-level of a file.
@@ -1230,7 +1234,11 @@ This allows me to benchmark Emacs startup.
   (add-hook 'before-save-hook 'pfif/auto-format-on-save)
 
   (setq lsp-ui-doc-enable nil)
-  :hook ((go-mode . lsp))
+  (setq lsp-dart-sdk-dir "/usr/local/Cellar/dart/2.7.2/libexec/")
+  :hook (
+  (go-mode . lsp)
+  (dart-mode . lsp)
+  )
   :general
   (local-leader-def 'lsp-mode-map
     "r" '(:ignore t :wk "rename")
@@ -1433,6 +1441,24 @@ Place point on the outer-most opening parenthesis to start:
                                                                         (format "go list %s/..." (projectile-project-root))
                                                                         ))))))
         (go-test--go-test (s-join " " packages)))))
+
+  (defun go-test--get-program (args &optional env)
+    "Return the command to launch unit test.
+`ARGS' corresponds to go command line arguments.
+When `ENV' concatenate before command."
+    (if env
+        (s-concat env " " go-command (el-patch-swap
+                                       ;; Original
+                                       " test "
+                                       ;; Replacement
+                                       " test -gcflags=-l "
+                                       ) args)
+      (s-concat go-command (el-patch-swap
+                                       ;; Original
+                                       " test "
+                                       ;; Replacement
+                                       " test -gcflags=-l "
+                                       ) args)))
 
   :general
   (local-leader-def 'go-mode-map
