@@ -400,6 +400,35 @@ Weeks start on Monday, and who thought MDY was a good idea?
 (use-package org-jira
   :disabled)
 #+end_src
+*** Do not add note when repeating tasks
+#+begin_src emacs-lisp :tangle yes
+(setq org-log-repeat nil)
+#+end_src
+*** Switch to buffers
+#+begin_src emacs-lisp :tangle yes
+(defun pfif/switch-to-tasklist ()
+    (interactive)
+    (persp-switch "~/tasklist/")
+    (find-file "~/tasklist/taskslist.org"))
+
+(defun pfif/switch-to-local-tasklist ()
+    (interactive)
+    (let ((persp-reset-windows-on-nil-window-conf t))
+      (persp-switch "~/local_tasklist/")
+      (find-file "~/local_tasklist/local_tasklist.org"))
+    )
+#+end_src
+*** Automatically commit on save
+#+begin_src emacs-lisp :tangle yes
+(use-package git-auto-commit-mode
+  :hook (org-mode . (lambda ()
+                      (when (string-match "/tasklist/" buffer-file-name)
+                        (setq gac-automatically-push-p t
+                              gac-automatically-add-new-files-p t)
+                        (git-auto-commit-mode)
+                      ))
+  ))
+#+end_src
 ** Custom functions
 *** Config
 **** Open this file
@@ -444,18 +473,7 @@ Weeks start on Monday, and who thought MDY was a good idea?
   "Open the message buffer."
   (interactive)
   (switch-to-buffer "*Messages*"))
-
-(defun pfif/switch-to-tasklist ()
-    (interactive)
-    (persp-switch "~/tasklist/")
-    (find-file "~/tasklist/taskslist.org"))
-
-(defun pfif/switch-to-local-tasklist ()
-    (interactive)
-    (let ((persp-reset-windows-on-nil-window-conf t))
-      (persp-switch "~/local_tasklist/")
-      (find-file "~/local_tasklist/local_tasklist.org"))
-    )
+  
 #+END_SRC
 **** Buffer line count
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -1254,7 +1272,9 @@ This allows me to benchmark Emacs startup.
     "l q" 'lsp-shutdown-workspace
     "l R" 'lsp-restart-workspace))
 
-(use-package company-lsp)
+(use-package company-lsp
+  :disabled
+)
 
 (use-package lsp-ui)
 (use-package lsp-ivy)
