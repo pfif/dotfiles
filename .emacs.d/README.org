@@ -368,9 +368,13 @@ of another theme."
 *** Capture
 #+begin_src emacs-lisp :tangle yes
 (setq org-capture-templates
-      '(("t" "Todo" entry
+      '(
+        ("t" "Todo later" entry
          (file+headline "local_tasklist.org" "Inbox")
          "* TODO %?")
+        ("n" "Todo today" entry
+         (file+headline "local_tasklist.org" "Short side tasks")
+         "* TODO %?\nSCHEDULED: %t")
         ("w" "Work item" entry
          (file+headline "local_tasklist_longterm.org" "Long term tasks")
          "* TODO %^{Ticket title}\n %^{Ticket URL}")
