@@ -357,9 +357,11 @@ of another theme."
 *** Agenda
 #+begin_src emacs-lisp :tangle yes
 (setq
- org-agenda-files (list "~/local_tasklist/local_tasklist.org"
-                        "~/local_tasklist/local_tasklist_longterm.org"
-                        "~/tasklist/")
+ org-agenda-files (seq-filter
+                   'file-exists-p
+                   '("~/local_tasklist/local_tasklist.org"
+                     "~/local_tasklist/local_tasklist_longterm.org"
+                     "~/tasklist/"))
  org-agenda-tag-filter-preset '("-archived" "-noagenda"))
 
 (setq org-agenda-custom-commands '(("w" "Florent's Work View"
