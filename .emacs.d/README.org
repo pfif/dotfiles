@@ -358,12 +358,25 @@ of another theme."
 #+begin_src emacs-lisp :tangle yes
 (setq
  org-agenda-files (list "~/local_tasklist/local_tasklist.org"
-                        "~/local_tasklist/local_tasklist_longterm.org")
+                        "~/local_tasklist/local_tasklist_longterm.org"
+                        "~/tasklist/")
  org-agenda-tag-filter-preset '("-archived" "-noagenda"))
 
-(setq org-agenda-custom-commands '(("q" "Florent's Custom View"
+(setq org-agenda-custom-commands '(("w" "Florent's Work View"
                                     ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "longtermtask")))))
+                                     (tags-todo "longtermtask"))
+                                    ((org-agenda-tag-filter-preset '("+work"))))
+
+                                   ("j" "Japanese todo"
+                                    agenda
+                                    ""
+                                    ((org-agenda-span 1)
+                                     (org-agenda-tag-filter-preset '("+japanese_daily_todo"))))
+
+                                   ("c" "Cleaning"
+                                    tags-todo
+                                    "cleaning")
+                                   ))
 #+end_src
 *** Capture
 #+begin_src emacs-lisp :tangle yes
@@ -426,7 +439,7 @@ Weeks start on Monday, and who thought MDY was a good idea?
 #+begin_src emacs-lisp :tangle yes
 (use-package git-auto-commit-mode
   :hook (org-mode . (lambda ()
-                      (when (string-match "/tasklist/" buffer-file-name)
+                      (when (and buffer-file-name (string-match "/tasklist/" buffer-file-name))
                         (setq gac-automatically-push-p t
                               gac-automatically-add-new-files-p t)
                         (git-auto-commit-mode)
