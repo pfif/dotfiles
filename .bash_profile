@@ -13,7 +13,7 @@ export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
 export GOPATH="$HOME/go-workspace/"
 export PATH=~/go-workspace/bin:$PATH
 
-source /usr/local/bin/virtualenvwrapper.sh
+[ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
 
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
