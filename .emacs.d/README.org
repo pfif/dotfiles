@@ -356,6 +356,7 @@ of another theme."
 #+end_src
 *** Agenda
 #+begin_src emacs-lisp :tangle yes
+(require 'seq)
 (setq
  org-agenda-files (seq-filter
                    'file-exists-p
@@ -363,6 +364,7 @@ of another theme."
                      "~/local_tasklist/local_tasklist_longterm.org"
                      "~/tasklist/"))
  org-agenda-tag-filter-preset '("-archived" "-noagenda"))
+
 
 (setq org-agenda-custom-commands '(("w" "Florent's Work View"
                                     ((agenda "" ((org-agenda-span 1)))
