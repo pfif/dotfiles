@@ -378,8 +378,9 @@ of another theme."
                                      (org-agenda-tag-filter-preset '("+japanese_daily_todo"))))
 
                                    ("c" "Cleaning"
-                                    tags-todo
-                                    "cleaning")
+                                    ((agenda "" ((org-agenda-span 1)))
+                                     (tags-todo "cleaning"))
+                                    ((org-agenda-tag-filter-preset '("+cleaning"))))
                                    ))
 #+end_src
 *** Capture
