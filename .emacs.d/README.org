@@ -368,7 +368,8 @@ of another theme."
 
 (setq org-agenda-custom-commands '(("w" "Florent's Work View"
                                     ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "longtermtask"))
+                                     (tags-todo "longtermtask")
+                                     (tags "timetracking"))
                                     ((org-agenda-tag-filter-preset '("+work"))))
 
                                    ("j" "Japanese todo"
