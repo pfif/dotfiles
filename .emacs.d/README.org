@@ -1032,11 +1032,17 @@ I only enable this every now and then.
         ((directories (list "~/Documents/company_projects" "~/Documents/external_projects/" "~/Documents/personal_projects"))
          (directory-content (seq-reduce (lambda (content directory) (seq-concatenate 'list content (directory-files directory t))) directories (list)))
          (subfolders (seq-filter 'file-directory-p directory-content))
-         (subfolders-without-dot (seq-filter (lambda (a) (not (string-match-p (regexp-quote ".") a))) subfolders)))
+         (subfolders-without-dot (seq-filter (lambda (a) (not (string-match-p (regexp-quote "^.") a))) subfolders)))
       (seq-map (lambda (a) (projectile-add-known-project a)) subfolders-without-dot)
       )
     )
 
+  (defun pfif/clone-company-repository ()
+    (interactive)
+    (let* ((url (read-from-minibuffer "URL:"))
+           (name (car (last (split-string url "/"))))
+           (directory (concat "~/Documents/company_projects/" name)))
+      (shell-command (concat "git clone " url " " directory))))
   :general
   (leader-def
     "p r" 'sulami/projectile-replace
@@ -1137,6 +1143,7 @@ I only enable this every now and then.
                                              :key "m"
                                              :description "Pull master"))
   (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell)
+
   :general
   (leader-def
     "g b" 'magit-blame-addition
