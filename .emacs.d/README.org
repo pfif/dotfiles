@@ -456,6 +456,26 @@ Weeks start on Monday, and who thought MDY was a good idea?
                       ))
   ))
 #+end_src
+*** http request in org-mode
+Naturally, this is a thing :D
+
+#+begin_src emacs-lisp :tangle yes
+(use-package verb
+  :defer t
+  :general
+  (local-leader-def
+    :keymaps 'org-mode-map
+    "h" '(:ignore t :wk "http")
+    "h s" 'verb-send-request-on-point-other-window-stay
+    "h S" 'verb-send-request-on-point-other-window
+    "h q" 'verb-send-request-on-point-no-window
+    "h r" 'verb-re-send-request
+    "h v" 'verb-set-var
+    "h y" 'verb-export-request-on-point)
+  (general-nmap
+    :keymaps 'verb-response-body-mode-map
+    "q" 'verb-kill-response-buffer-and-window))
+#+end_src
 ** Custom functions
 *** Config
 **** Open this file
@@ -1286,7 +1306,7 @@ This allows me to benchmark Emacs startup.
   (add-hook 'before-save-hook 'pfif/auto-format-on-save)
 
   (setq lsp-ui-doc-enable nil)
-  (setq lsp-dart-sdk-dir "/usr/local/Cellar/dart/2.7.2/libexec/")
+  (setq lsp-dart-sdk-dir "/usr/local/Cellar/dart/2.8.2/libexec/")
   :hook (
   (go-mode . lsp)
   (dart-mode . lsp)
