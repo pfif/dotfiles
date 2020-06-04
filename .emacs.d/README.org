@@ -1512,7 +1512,8 @@ Place point on the outer-most opening parenthesis to start:
                                                                         ;; Original
                                                                         "go list ./..."
                                                                         ;; Replacement
-                                                                        (format "go list %s/..." (projectile-project-root))
+                                                                        (let ((suffix-to-directory (if (and (projectile-project-root) (seq-contains (directory-files (projectile-project-root)) "lambda")) "lambda" "")))
+                                                                          (format "go list %s%s/..." (projectile-project-root) suffix-to-directory))
                                                                         ))))))
         (go-test--go-test (s-join " " packages)))))
 
