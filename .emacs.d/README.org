@@ -689,6 +689,15 @@ Naturally, this is a thing :D
         (org-narrow-to-subtree)
       (narrow-to-defun))))
 #+end_src
+*** Open Terminal at current directory
+Because I don't understand how to be productive with the terminal provides
+
+#+begin_src emacs-lisp :tangle yes
+(defun pfif/open-terminal ()
+  (interactive)
+  (let* ((current-directory (car (last (split-string (pwd) " ")))))
+    (shell-command (concat "open -a Terminal " current-directory))))
+#+end_src
 ** Hydra
 #+begin_src emacs-lisp :tangle yes
 (use-package hydra
