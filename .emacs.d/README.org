@@ -397,6 +397,85 @@ declarations.
    :keymaps 'dired-mode-map
    "<return>" 'dired-find-alternate-file))
 #+END_SRC
+** Evil
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil
+  :init
+  (setq evil-want-C-u-scroll t
+        evil-want-C-i-jump t
+        evil-want-Y-yank-to-eol t
+        evil-want-keybinding nil)
+  :config
+  ;; This conflicts with the local leader
+  (unbind-key "," evil-motion-state-map)
+
+  (defun sulami/evil-set-jump-wrapper (cmd)
+    "Wraps a general command to call `evil-set-jump' before."
+    (let ((cmd-name (symbol-name cmd)))
+      `((lambda (&rest rest)
+          (interactive)
+          (evil-set-jump)
+          (apply (quote ,cmd) rest))
+        :wk ,cmd-name)))
+
+  (defun sulami/evil-shift-left-visual ()
+    "`evil-shift-left`, but keeps the selection."
+    (interactive)
+    (call-interactively 'evil-shift-left)
+    (evil-normal-state)
+    (evil-visual-restore))
+
+  (defun sulami/evil-shift-right-visual ()
+    "`evil-shift-right`, but keeps the selection."
+    (interactive)
+    (call-interactively 'evil-shift-right)
+    (evil-normal-state)
+    (evil-visual-restore))
+
+  :general
+  (leader-def
+   "TAB" 'evil-switch-to-windows-last-buffer
+   "<tab>" 'evil-switch-to-windows-last-buffer
+   "w d" 'evil-window-delete
+   "w /" 'evil-window-vsplit
+   "w -" 'evil-window-split)
+  (general-vmap
+    ">" 'sulami/evil-shift-right-visual
+    "<" 'sulami/evil-shift-left-visual)
+  :hook (after-init . evil-mode))
+
+(use-package evil-collection
+  :after (evil)
+  :config
+  (setq evil-collection-mode-list
+        (delete 'company evil-collection-mode-list))
+  (evil-collection-init))
+
+(use-package evil-org
+  :after org
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  (evil-define-key 'motion org-agenda-mode-map (kbd "SPC") 'counsel-M-x)
+  :hook ((org-mode . evil-org-mode)))
+
+(use-package evil-search-highlight-persist
+  :config
+  (defun sulami/isearch-nohighlight ()
+    "Remove search highlights if not in the isearch minor mode."
+    (interactive)
+    (when (not isearch-mode)
+      (evil-search-highlight-persist-remove-all)))
+  :general
+  (general-nmap "RET" 'sulami/isearch-nohighlight)
+  :hook (evil-mode . global-evil-search-highlight-persist))
+
+(use-package evil-commentary
+  :hook (evil-mode . evil-commentary-mode))
+
+(use-package evil-surround
+  :hook (evil-mode . global-evil-surround-mode))
+#+END_SRC
 ** Org mode
 *** Default directory
 #+begin_src emacs-lisp :tangle yes
@@ -480,6 +559,23 @@ declarations.
                                      (tags-todo "cleaning"))
                                     ((org-agenda-tag-filter-preset '("+cleaning"))))
                                    ))
+
+(defun pfif/org-agenda-schedule-today ()
+  (interactive)
+  (org-agenda-schedule nil "+0")
+)
+
+(defun pfif/org-agenda-schedule-tomorrow ()
+  (interactive)
+  (org-agenda-schedule nil "+1") )
+
+(general-define-key
+ :keymaps 'org-agenda-mode-map
+ :states 'motion
+ "m" 'pfif/org-agenda-schedule-today
+ "c" 'pfif/org-agenda-schedule-tomorrow
+ )
+
 #+end_src
 *** Capture
 #+begin_src emacs-lisp :tangle yes
@@ -491,10 +587,14 @@ declarations.
         ("n" "Todo today" entry
          (file+headline "local_tasklist.org" "Short side tasks")
          "* TODO %?\nSCHEDULED: %t")
-        ("w" "Work item" entry
+        ("w" "Work items")
+        ("ww" "Work item" entry
          (file+headline "local_tasklist_longterm.org" "Long term tasks")
          "* TODO %^{Ticket title}\n %^{Ticket URL}")
-))
+        ("wm" "Maintenance work item" entry
+         (file+headline "local_tasklist_longterm.org" "Long term tasks (maintenance)")
+         "* TODO %^{Ticket title}\n %^{Ticket URL}")
+        ))
 #+end_src
 *** Refile
 This allows me to refile from the GTD inbox to the top-level of a file.
@@ -703,84 +803,6 @@ Because I don't understand how to be productive with the terminal provides
 (use-package hydra
   :defer t)
 #+end_src
-** Evil
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package evil
-  :init
-  (setq evil-want-C-u-scroll t
-        evil-want-C-i-jump t
-        evil-want-Y-yank-to-eol t
-        evil-want-keybinding nil)
-  :config
-  ;; This conflicts with the local leader
-  (unbind-key "," evil-motion-state-map)
-
-  (defun sulami/evil-set-jump-wrapper (cmd)
-    "Wraps a general command to call `evil-set-jump' before."
-    (let ((cmd-name (symbol-name cmd)))
-      `((lambda (&rest rest)
-          (interactive)
-          (evil-set-jump)
-          (apply (quote ,cmd) rest))
-        :wk ,cmd-name)))
-
-  (defun sulami/evil-shift-left-visual ()
-    "`evil-shift-left`, but keeps the selection."
-    (interactive)
-    (call-interactively 'evil-shift-left)
-    (evil-normal-state)
-    (evil-visual-restore))
-
-  (defun sulami/evil-shift-right-visual ()
-    "`evil-shift-right`, but keeps the selection."
-    (interactive)
-    (call-interactively 'evil-shift-right)
-    (evil-normal-state)
-    (evil-visual-restore))
-
-  :general
-  (leader-def
-   "TAB" 'evil-switch-to-windows-last-buffer
-   "<tab>" 'evil-switch-to-windows-last-buffer
-   "w d" 'evil-window-delete
-   "w /" 'evil-window-vsplit
-   "w -" 'evil-window-split)
-  (general-vmap
-    ">" 'sulami/evil-shift-right-visual
-    "<" 'sulami/evil-shift-left-visual)
-  :hook (after-init . evil-mode))
-
-(use-package evil-collection
-  :after (evil)
-  :config
-  (setq evil-collection-mode-list
-        (delete 'company evil-collection-mode-list))
-  (evil-collection-init))
-
-(use-package evil-org
-  :after org
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  :hook ((org-mode . evil-org-mode)))
-
-(use-package evil-search-highlight-persist
-  :config
-  (defun sulami/isearch-nohighlight ()
-    "Remove search highlights if not in the isearch minor mode."
-    (interactive)
-    (when (not isearch-mode)
-      (evil-search-highlight-persist-remove-all)))
-  :general
-  (general-nmap "RET" 'sulami/isearch-nohighlight)
-  :hook (evil-mode . global-evil-search-highlight-persist))
-
-(use-package evil-commentary
-  :hook (evil-mode . evil-commentary-mode))
-
-(use-package evil-surround
-  :hook (evil-mode . global-evil-surround-mode))
-#+END_SRC
 ** Which key
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package which-key
@@ -1597,6 +1619,10 @@ When `ENV' concatenate before command."
                                pkg-count
                                startup-time)))))
 #+END_SRC
+** jq mode
+#+begin_src emacs-lisp :tangle yes
+(use-package jq-mode)
+#+end_src
 ** TODO Split up headings
 ** TODO emacsclient setup
 I'd like to have emacsclient open in a new, clean frame, and clean up
