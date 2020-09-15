@@ -534,7 +534,9 @@ declarations.
                    'file-exists-p
                    '("~/local_tasklist/local_tasklist.org"
                      "~/local_tasklist/local_tasklist_longterm.org"
-                     "~/tasklist/"))
+                     "~/tasklist/"
+                     "~/tasklist/zettlekasten/"
+                     ))
  org-agenda-tag-filter-preset '("-archived" "-noagenda")
  org-agenda-sorting-strategy '((agenda habit-down time-up scheduled-up priority-down category-keep)
                                (todo priority-down category-keep)
@@ -579,6 +581,11 @@ declarations.
 #+end_src
 *** Capture
 #+begin_src emacs-lisp :tangle yes
+(defun pfif/zettlekasten-file-name ()
+  (interactive)
+  (let ((today (mapcar 'number-to-string (calendar-current-date))))
+    (find-file (concat "~/tasklist/zettlekasten/" (nth 2 today) (nth 0 today) (nth 1 today) "-" (read-from-minibuffer "Entry title: ") ".org"))))
+
 (setq org-capture-templates
       '(
         ("t" "Todo later" entry
@@ -594,6 +601,13 @@ declarations.
         ("wm" "Maintenance work item" entry
          (file+headline "local_tasklist_longterm.org" "Long term tasks (maintenance)")
          "* TODO %^{Ticket title}\n %^{Ticket URL}")
+        ("z" "Zettlekasten")
+        ("zz" "New entry" entry
+         (function pfif/zettlekasten-file-name)
+         "* %^{Entry title} %^G\n%t\n%?\n\nSources:\n-\n\nLinks:\n-")
+        ("zc" "New entry (from region)" entry
+         (function pfif/zettlekasten-file-name)
+         "* %^{Entry title} %^G\n%t\n%i\n\nSources:\n-\n\nLinks:\n-")
         ))
 #+end_src
 *** Refile
