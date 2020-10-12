@@ -10,9 +10,6 @@ alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
 
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
 
-export GOPATH="$HOME/go-workspace/"
-export PATH=~/go-workspace/bin:$PATH
-
 [ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
 
 if command -v pyenv 1>/dev/null 2>&1; then
