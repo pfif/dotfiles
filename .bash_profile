@@ -9,6 +9,7 @@ alias gpf="gp -f"
 alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
 
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
+export PATH="$PATH":"$HOME/.selfcompiledbins"
 
 [ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
 
