@@ -2,6 +2,19 @@
 #+FILETAGS: sideproject yak
 #+CATEGORY: Emacs
 * Emacs
+** Full screen if requested
+When "-fullscreen" is passed as a command line argument to emacs, set
+the frame size and position. Useful when starting emacs without a
+window manager for a quiet writing experience.
+
+#+begin_src emacs-lisp :tangle yes
+(add-to-list
+ 'command-switch-alist
+ '("-fullscreen" . (lambda (x)
+                    (let ((frame-resize-pixelwise t))
+                      (set-frame-size (selected-frame) (x-display-pixel-width) (x-display-pixel-height) t)
+                      (set-frame-position (selected-frame) 0 0)))))
+#+end_src
 ** Better defaults
 *** Use lexical binding in this file
 :PROPERTIES:
@@ -181,7 +194,7 @@ devices feel more reasonable.
 (setq mouse-wheel-progressive-speed nil
       mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 #+END_SRC
-*** No line wrapping
+*** COMMENT No line wrapping
 :PROPERTIES:
 :ID:       1617ABB0-C887-4B69-BFEF-45051B6263CA
 :END:
