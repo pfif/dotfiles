@@ -1376,7 +1376,7 @@ I only enable this every now and then.
   :init
   (setq projectile-completion-system 'ivy)
   :config
-  (defun sulami/projectile-replace ()
+   (defun sulami/projectile-replace ()
     "Search and replace in the whole project."
     (interactive)
     (dired (projectile-project-root) "-alR")
@@ -1728,9 +1728,11 @@ This allows me to benchmark Emacs startup.
 
   (setq lsp-ui-doc-enable nil)
   (setq lsp-dart-sdk-dir "/usr/local/Cellar/dart/2.8.2/libexec/")
+  (setq lsp-eslint-enable t)
   :hook (
   (go-mode . lsp)
   (dart-mode . lsp)
+  (js-mode . lsp)
   )
   :general
   (local-leader-def 'lsp-mode-map
