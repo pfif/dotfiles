@@ -252,6 +252,23 @@ Use ~aspell~ with British English.
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
 #+END_SRC
+*** Tab width
+#+begin_src emacs-lisp :tangle yes
+(setq tab-width 2)
+#+end_src
+** Tabs
+My team (and Golang) made me
+
+#+begin_src emacs-lisp :tangle yes
+;; Our Custom Variable
+(setq custom-tab-width 2)
+
+(defun disable-tabs () (setq indent-tabs-mode nil))
+(defun enable-tabs  ()
+  (local-set-key (kbd "TAB") 'tab-to-tab-stop)
+  (setq indent-tabs-mode t)
+  (setq tab-width custom-tab-width))
+#+end_src
 ** macOS
 Everything in here relates to macOS in some way.
 *** Swap the modifier keys
@@ -1908,12 +1925,18 @@ Place point on the outer-most opening parenthesis to start:
     "d d" 'elpy-doc
 ))
 #+end_src
+** Javascript
+#+begin_src emacs-lisp :tangle yes
+(add-hook 'js-mode-hook 'enable-tabs)
+#+end_src
 ** Golang
 :PROPERTIES:
 :ID:       618EDA7C-FA1F-45B1-B2B8-66BAE3D9AF6E
 :END:
 #+begin_src emacs-lisp :tangle yes
 (use-package go-mode
+  :hook
+  (go-mode . enable-tabs)
   :general
   (local-leader-def 'go-mode-map
     "e" '(:ignore t :wk "Exec")
