@@ -273,13 +273,14 @@ Use ~aspell~ with British English.
 My team (and Golang) made me
 
 #+begin_src emacs-lisp :tangle yes
-;; Our Custom Variable
 (setq custom-tab-width 2)
+(setq js-indent-level 2)
 
 (defun disable-tabs () (setq indent-tabs-mode nil))
 (defun enable-tabs  ()
   (local-set-key (kbd "TAB") 'tab-to-tab-stop)
   (setq indent-tabs-mode t)
+  (setq electric-indent-inhibit t)
   (setq tab-width custom-tab-width))
 #+end_src
 ** macOS
