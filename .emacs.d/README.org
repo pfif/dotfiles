@@ -1760,7 +1760,9 @@ This allows me to benchmark Emacs startup.
     "d d" 'lsp-describe-thing-at-point
     "l" '(:ignore t :wk "lsp")
     "l q" 'lsp-shutdown-workspace
-    "l R" 'lsp-restart-workspace))
+    "l R" 'lsp-restart-workspace
+    "f" 'lsp-eslint-fix-all
+    ))
 
 (use-package company-lsp
   :disabled
