@@ -280,7 +280,6 @@ My team (and Golang) made me
 (defun enable-tabs  ()
   (local-set-key (kbd "TAB") 'tab-to-tab-stop)
   (setq indent-tabs-mode t)
-  (setq electric-indent-inhibit t)
   (setq tab-width custom-tab-width))
 #+end_src
 ** macOS
