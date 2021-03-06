@@ -1570,10 +1570,6 @@ I only enable this every now and then.
   :init
   (setq magit-completing-read-function 'ivy-completing-read))
 
-(use-package evil-magit
-  :defer t
-  :hook (magit-mode . (lambda () (require 'evil-magit))))
-
 (use-package git-link
   :init
   (defun open-git-link-in-browser ()
