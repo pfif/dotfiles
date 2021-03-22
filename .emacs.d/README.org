@@ -737,8 +737,7 @@ declarations.
 
 (setq org-agenda-custom-commands '(("w" "Florent's Work View"
                                     ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "longtermtask")
-                                     (tags "timetracking"))
+                                     (tags-todo "longtermtask" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline)))))
                                     ((org-agenda-tag-filter-preset '("+work"))))
 
                                    ("j" "Japanese todo"
