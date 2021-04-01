@@ -725,8 +725,8 @@ declarations.
                    'file-exists-p
                    '("~/local_tasklist/local_tasklist.org"
                      "~/local_tasklist/local_tasklist_longterm.org"
-                     "~/tasklist/"
-                     "~/tasklist/zettlekasten/"
+                     "~/Dropbox/ost-tasklist/"
+                     "~/Dropbox/ost-tasklist/zettlekasten/"
                      ))
  org-agenda-tag-filter-preset '("-archived" "-noagenda")
  org-agenda-sorting-strategy '((agenda habit-down time-up scheduled-up priority-down category-keep)
@@ -749,7 +749,8 @@ declarations.
 
                                    ("c" "Cleaning"
                                     ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "cleaning"))
+                                     (tags-todo "cleaningforothers")
+                                     (tags-todo "cleaningformyself"))
                                     ((org-agenda-tag-filter-preset '("+cleaning"))))
                                    ))
 
@@ -790,7 +791,7 @@ declarations.
 (defun pfif/zettlekasten-file-name ()
   (interactive)
   (let ((today (mapcar 'number-to-string (calendar-current-date))))
-    (find-file (concat "~/tasklist/zettlekasten/" (nth 2 today) (nth 0 today) (nth 1 today) "-" (read-from-minibuffer "Entry title (filename): ") ".org"))))
+    (find-file (concat "~/Dropbox/ost-tasklist/zettlekasten/" (nth 2 today) (nth 0 today) (nth 1 today) "-" (read-from-minibuffer "Entry title (filename): ") ".org"))))
 
 (setq org-capture-templates
       '(
@@ -814,7 +815,13 @@ declarations.
         ("zc" "New entry (from region)" entry
          (function pfif/zettlekasten-file-name)
          "* %^{Entry title} %^G\n%t\n%i\n\nSources:\n-\n\nLinks:\n-")
-        ))
+        ("c" "Cleaning")
+        ("co" "Cleaning (for others)" entry
+         (file+headline "~/Dropbox/ost-tasklist/cleaning.org" "Cleaning")
+         "* TODO %^{Task}")
+        ("cm" "Cleaning (for myself)" entry
+         (file+headline "~/Dropbox/ost-tasklist/cleaning.org" "Clean for myself")
+         "* TODO %^{Task}")))
 #+end_src
 *** Refile
 :PROPERTIES:
@@ -866,8 +873,8 @@ Weeks start on Monday, and who thought MDY was a good idea?
 #+begin_src emacs-lisp :tangle yes
 (defun pfif/switch-to-tasklist ()
     (interactive)
-    (persp-switch "~/tasklist/")
-    (find-file "~/tasklist/taskslist.org"))
+    (persp-switch "~/Dropbox/ost-tasklist/")
+    (find-file "~/Dropbox/ost-tasklist/cleaning.org"))
 
 (defun pfif/switch-to-local-tasklist ()
     (interactive)
