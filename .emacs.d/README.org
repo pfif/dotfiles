@@ -533,7 +533,7 @@ declarations.
     "t N" 'sulami/toggle-narrow
     "w =" 'balance-windows
     "w m" 'sulami/toggle-maximise-window
-    "z" (lambda () (interactive) (when (fboundp 'deft-setup) (deft-setup)) (deft))
+    "z" (lambda () (interactive) (find-file "~/Dropbox/ost-tasklist/zettlekasten.org"))
     )
   (general-define-key
    "s-m" 'suspend-frame
@@ -730,7 +730,6 @@ declarations.
                    '("~/local_tasklist/local_tasklist.org"
                      "~/local_tasklist/local_tasklist_longterm.org"
                      "~/Dropbox/ost-tasklist/"
-                     "~/Dropbox/ost-tasklist/zettlekasten/"
                      ))
  org-agenda-tag-filter-preset '("-archived" "-noagenda")
  org-agenda-sorting-strategy '((agenda habit-down time-up scheduled-up priority-down category-keep)
@@ -792,11 +791,6 @@ declarations.
 :ID:       899E35F9-4D7D-4629-AA40-2E79F6581561
 :END:
 #+begin_src emacs-lisp :tangle yes
-(defun pfif/zettlekasten-file-name ()
-  (interactive)
-  (let ((today (mapcar 'number-to-string (calendar-current-date))))
-    (find-file (concat "~/Dropbox/ost-tasklist/zettlekasten/" (nth 2 today) (nth 0 today) (nth 1 today) "-" (read-from-minibuffer "Entry title (filename): ") ".org"))))
-
 (setq org-capture-templates
       '(
         ("t" "Todo later" entry
@@ -814,11 +808,8 @@ declarations.
          "* TODO %^{Ticket title}\n %^{Ticket URL}")
         ("z" "Zettlekasten")
         ("zz" "New entry" entry
-         (function pfif/zettlekasten-file-name)
+         (file "~/Dropbox/ost-tasklist/zettlekasten.org")
          "* %^{Entry title} %^G\n%t\n%?\n\nSources:\n-\n\nLinks:\n-")
-        ("zc" "New entry (from region)" entry
-         (function pfif/zettlekasten-file-name)
-         "* %^{Entry title} %^G\n%t\n%i\n\nSources:\n-\n\nLinks:\n-")
         ("c" "Cleaning")
         ("co" "Cleaning (for others)" entry
          (file+headline "~/Dropbox/ost-tasklist/cleaning.org" "Cleaning")
@@ -887,20 +878,6 @@ Weeks start on Monday, and who thought MDY was a good idea?
       (find-file "~/local_tasklist/local_tasklist.org"))
     )
 #+end_src
-*** Automatically commit on save
-:PROPERTIES:
-:ID:       E561B086-3FFF-4DC5-B269-D2E76B55A5B5
-:END:
-#+begin_src emacs-lisp :tangle yes
-(use-package git-auto-commit-mode
-  :hook (org-mode . (lambda ()
-                      (when (and buffer-file-name (string-match "/tasklist/" buffer-file-name))
-                        (setq gac-automatically-push-p t
-                              gac-automatically-add-new-files-p t)
-                        (git-auto-commit-mode)
-                      ))
-  ))
-#+end_src
 *** http request in org-mode
 :PROPERTIES:
 :ID:       76493A7F-4330-4198-AD2D-CB7F940045AB
@@ -936,11 +913,13 @@ Naturally, this is a thing :D
              :host github
              :fork (:host github
                           :repo "pfif/org-backlink"))
+  :config
+  (setq org-backlink-mode-files '("~/Dropbox/ost-tasklist/zettlekasten.org"))
   :hook (org-mode . org-backlink-mode)
   :general
   (local-leader-def
     :keymaps 'org-mode-map
-    "b" '(:ignore t :wk "http")
+    "b" '(:ignore t :wk "backlink")
     "b e" (lambda ()
             (interactive)
             (org-id-update-id-locations)
@@ -2086,23 +2065,28 @@ When `ENV' concatenate before command."
 ** TODO emacsclient setup
 I'd like to have emacsclient open in a new, clean frame, and clean up
 upon termination.
-** Deft
-:PROPERTIES:
-:ID:       720E0C87-DB16-4509-9D72-1422C78CBA27
-:END:
-#+begin_src emacs-lisp :tangle yes
-(use-package deft
-  :commands (deft)
-  :config (setq deft-directory "~/tasklist/zettlekasten/"
-                deft-extensions '("org"))
-  )
-#+end_src
 ** Terraform
+:PROPERTIES:
+:ID:       a56959fe-0e2f-49d1-beca-9259146f7d89
+:END:
 #+begin_src emacs-lisp :tangle yes
 (use-package terraform-mode)
 #+end_src
 ** Litteral calc mode
+:PROPERTIES:
+:ID:       301c6e65-b0b7-473d-b104-e4b03ab9df16
+:END:
 #+begin_src emacs-lisp :tangle yes
 (use-package literate-calc-mode
   :ensure t)
+#+end_src
+** Fcitx
+:PROPERTIES:
+:ID:       f5130b4d-5b5a-459b-8941-57d977eb3c98
+:END:
+#+begin_src emacs-lisp :tangle yes
+(use-package fcitx
+  :config
+  (fcitx-aggressive-setup)
+  (setq fcitx-use-dbus t))
 #+end_src
