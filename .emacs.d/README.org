@@ -752,9 +752,10 @@ declarations.
 
                                    ("c" "Cleaning"
                                     ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "cleaningforothers")
-                                     (tags-todo "cleaningformyself"))
-                                    ((org-agenda-tag-filter-preset '("+cleaning"))))
+                                     (tags-todo "cleaningforothers" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))))
+                                     (tags-todo "cleaningformyself" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline)))))
+                                    ((org-agenda-tag-filter-preset '("+cleaning"))
+                                     (org-deadline-warning-days 31)))
                                    ))
 
 (defun pfif/org-agenda-schedule-today ()
@@ -933,6 +934,11 @@ Naturally, this is a thing :D
 :END:
 #+begin_src emacs-lisp :tangle yes
 (setq org-id-link-to-org-use-id t)
+#+end_src
+*** Change image size
+I tend to save huge image in my Zettlekasten that are too big for my screen. This make sure they resized when shown in org-mode.
+#+begin_src emacs-lisp :tangle yes
+(setq org-image-actual-width 600)
 #+end_src
 ** Custom functions
 *** Config
