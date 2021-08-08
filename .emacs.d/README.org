@@ -533,7 +533,9 @@ declarations.
     "t N" 'sulami/toggle-narrow
     "w =" 'balance-windows
     "w m" 'sulami/toggle-maximise-window
-    "z" (lambda () (interactive) (find-file "~/Dropbox/ost-tasklist/zettlekasten.org"))
+    "z" (lambda () (interactive)
+          (org-id-update-id-locations)
+          (find-file "~/Dropbox/ost-tasklist/zettlekasten.org"))
     )
   (general-define-key
    "s-m" 'suspend-frame
@@ -547,7 +549,9 @@ declarations.
     "a" 'org-agenda
     "d" 'org-deadline
     "f" 'org-fill-paragraph
-    "l" 'org-insert-link
+    "l" '(:ignore t :wk "link")
+    "l l" 'org-insert-link
+    "l v" 'pfif/org-attach-vlc-screencap
     "r" '(org-refile :wk "org-refile")
     "s" 'org-schedule
     "S" 'org-babel-switch-to-session)
@@ -903,7 +907,7 @@ Naturally, this is a thing :D
     "q" 'verb-kill-response-buffer-and-window))
 #+end_src
 *** Links
-**** Show backlink
+**** COMMENT Show backlink
 :PROPERTIES:
 :ID:       24B10028-7844-4E3C-9D8E-8EB14B4A3DD7
 :END:
@@ -936,9 +940,31 @@ Naturally, this is a thing :D
 (setq org-id-link-to-org-use-id t)
 #+end_src
 *** Change image size
+:PROPERTIES:
+:ID:       03065da5-0d57-45d2-b79a-43ccd33dd34e
+:END:
 I tend to save huge image in my Zettlekasten that are too big for my screen. This make sure they resized when shown in org-mode.
 #+begin_src emacs-lisp :tangle yes
 (setq org-image-actual-width 600)
+#+end_src
+*** Attach
+:PROPERTIES:
+:ID:       5e10325c-3dff-4153-b855-b46b3d848981
+:END:
+#+begin_src emacs-lisp :tangle yes
+(defun pfif/org-attach-vlc-screencap ()
+  (interactive)
+  (let ((pictures (->> (directory-files "~/Pictures/")
+                       (seq-filter (lambda (filename) (string-prefix-p "vlc" filename)))))
+        (org-attach-method 'mv))
+    (-each pictures
+      (lambda (filename)
+        (org-attach-attach (concat "~/Pictures/" filename))
+        (org-insert-link "attachement" (concat "attachment:"filename))
+        (insert "\n")))
+    )
+
+  )
 #+end_src
 ** Custom functions
 *** Config
@@ -1935,6 +1961,9 @@ Place point on the outer-most opening parenthesis to start:
 ))
 #+end_src
 ** Javascript
+:PROPERTIES:
+:ID:       3fe31992-d11b-4036-9538-6385d1423102
+:END:
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'js-mode-hook 'enable-tabs)
 #+end_src
@@ -2095,4 +2124,11 @@ upon termination.
   :config
   (fcitx-aggressive-setup)
   (setq fcitx-use-dbus t))
+#+end_src
+** Fountain
+:PROPERTIES:
+:ID:       da33a863-3a50-4d77-9d53-d1cd5d24ec86
+:END:
+#+begin_src emacs-lisp :tangle yes
+(use-package fountain-mode)
 #+end_src
