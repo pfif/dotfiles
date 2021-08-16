@@ -2144,5 +2144,6 @@ upon termination.
 ** Undo sytem
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-fu
+  :config
   (setq evil-undo-system 'undo-fu))
 #+end_src
