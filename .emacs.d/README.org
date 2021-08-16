@@ -1960,11 +1960,9 @@ Place point on the outer-most opening parenthesis to start:
     "d d" 'elpy-doc
 ))
 #+end_src
-** Javascript
-:PROPERTIES:
-:ID:       3fe31992-d11b-4036-9538-6385d1423102
-:END:
+** Javascript / typescript
 #+begin_src emacs-lisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.tsx?$" . js-mode))
 (add-hook 'js-mode-hook 'enable-tabs)
 #+end_src
 ** Golang
@@ -2096,6 +2094,17 @@ When `ENV' concatenate before command."
 #+begin_src emacs-lisp :tangle yes
 (use-package jq-mode)
 #+end_src
+** Plant UML
+#+begin_src emacs-lisp :tangle yes
+(use-package plantuml-mode
+  :config
+  (setq plantuml-default-exec-mode 'executable)
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+)
+
+(setq org-plantuml-jar-path "~/Downloads/plantuml.jar")
+#+end_src
 ** TODO Split up headings
 ** TODO emacsclient setup
 I'd like to have emacsclient open in a new, clean frame, and clean up
@@ -2119,8 +2128,10 @@ upon termination.
 :PROPERTIES:
 :ID:       f5130b4d-5b5a-459b-8941-57d977eb3c98
 :END:
+** Undo sytem
 #+begin_src emacs-lisp :tangle yes
 (use-package fcitx
+(use-package undo-fu
   :config
   (fcitx-aggressive-setup)
   (setq fcitx-use-dbus t))
@@ -2131,4 +2142,5 @@ upon termination.
 :END:
 #+begin_src emacs-lisp :tangle yes
 (use-package fountain-mode)
+  (setq evil-undo-system 'undo-fu))
 #+end_src
