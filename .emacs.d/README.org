@@ -2128,10 +2128,8 @@ upon termination.
 :PROPERTIES:
 :ID:       f5130b4d-5b5a-459b-8941-57d977eb3c98
 :END:
-** Undo sytem
 #+begin_src emacs-lisp :tangle yes
 (use-package fcitx
-(use-package undo-fu
   :config
   (fcitx-aggressive-setup)
   (setq fcitx-use-dbus t))
@@ -2142,5 +2140,9 @@ upon termination.
 :END:
 #+begin_src emacs-lisp :tangle yes
 (use-package fountain-mode)
+#+end_src
+** Undo sytem
+#+begin_src emacs-lisp :tangle yes
+(use-package undo-fu
   (setq evil-undo-system 'undo-fu))
 #+end_src
