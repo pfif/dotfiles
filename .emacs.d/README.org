@@ -798,10 +798,10 @@ declarations.
 #+begin_src emacs-lisp :tangle yes
 (setq org-capture-templates
       '(
-        ("t" "Todo later" entry
+        ("i" "Inbox" entry
          (file+headline "local_tasklist.org" "Inbox")
          "* TODO %?")
-        ("n" "Todo today" entry
+        ("t" "Todo today" entry
          (file+headline "local_tasklist.org" "Short side tasks")
          "* TODO %?\nSCHEDULED: %t")
         ("w" "Work items")
