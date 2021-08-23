@@ -966,6 +966,13 @@ I tend to save huge image in my Zettlekasten that are too big for my screen. Thi
 
   )
 #+end_src
+*** Sparse tree
+:PROPERTIES:
+:ID:       7a6e8632-7967-4b46-9a85-78e67053744d
+:END:
+#+begin_src emacs-lisp :tangle yes
+(setq org-show-context-detail '((default . local)))
+#+end_src
 ** Custom functions
 *** Config
 **** Open this file
