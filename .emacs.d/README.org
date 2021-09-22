@@ -418,6 +418,13 @@ of another theme."
             :after
             #'sulami/after-load-theme-advice)
 
+(defun pfif/refresh-theme ()
+  (interactive)
+  (let ((hour-of-day (read (format-time-string "%H"))))
+    (if (<= 8 hour-of-day 17)
+        (load-theme 'doom-solarized-light t)
+      (load-theme 'doom-moonlight t))))
+
 (use-package doom-themes
   :after (dash)
   :init
@@ -426,11 +433,7 @@ of another theme."
   :config
   (doom-themes-org-config)
   ;; Set the default colourscheme according to the time of day
-  :hook (after-init . (lambda ()
-                        (let ((hour-of-day (read (format-time-string "%H"))))
-                          (if (<= 8 hour-of-day 17)
-                              (load-theme 'doom-solarized-light t)
-                            (load-theme 'doom-solarized-dark t))))))
+  :hook (after-init . pfif/refresh-theme))
 #+END_SRC
 *** All the icons
 :PROPERTIES:
