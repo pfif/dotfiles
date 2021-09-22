@@ -529,6 +529,7 @@ declarations.
     "h v" 'describe-variable
     "p w" 'pfif/switch-to-local-tasklist
     "p q" 'pfif/switch-to-tasklist
+    "p t" 'pfif/switch-to-local-toolkit
     "t l" 'toggle-truncate-lines
     "t r" 'refill-mode
     "t s" 'flyspell-mode
@@ -884,6 +885,13 @@ Weeks start on Monday, and who thought MDY was a good idea?
     (let ((persp-reset-windows-on-nil-window-conf t))
       (persp-switch "~/local_tasklist/")
       (find-file "~/local_tasklist/local_tasklist.org"))
+    )
+
+(defun pfif/switch-to-local-toolkit ()
+    (interactive)
+    (let ((persp-reset-windows-on-nil-window-conf t))
+      (persp-switch "~/local_tasklist/")
+      (find-file "~/local_tasklist/tools.org"))
     )
 #+end_src
 *** http request in org-mode
