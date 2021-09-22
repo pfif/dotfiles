@@ -194,7 +194,7 @@ devices feel more reasonable.
 (setq mouse-wheel-progressive-speed nil
       mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 #+END_SRC
-*** COMMENT No line wrapping
+*** No line wrapping
 :PROPERTIES:
 :ID:       1617ABB0-C887-4B69-BFEF-45051B6263CA
 :END:
