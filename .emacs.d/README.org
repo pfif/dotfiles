@@ -276,8 +276,11 @@ My team (and Golang) made me
 (setq custom-tab-width 2)
 (setq js-indent-level 2)
 
-(defun disable-tabs () (setq indent-tabs-mode nil))
-(defun enable-tabs  ()
+(defun pfif/disable-tabs ()
+ (interactive)
+ (setq indent-tabs-mode nil))
+(defun pfif/enable-tabs  ()
+  (interactive)
   (local-set-key (kbd "TAB") 'tab-to-tab-stop)
   (setq indent-tabs-mode t)
   (setq tab-width custom-tab-width))
@@ -1981,7 +1984,7 @@ Place point on the outer-most opening parenthesis to start:
 ** Javascript / typescript
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.tsx?$" . js-mode))
-(add-hook 'js-mode-hook 'enable-tabs)
+(add-hook 'js-mode-hook 'pfif/enable-tabs)
 #+end_src
 ** Golang
 :PROPERTIES:
@@ -1990,7 +1993,7 @@ Place point on the outer-most opening parenthesis to start:
 #+begin_src emacs-lisp :tangle yes
 (use-package go-mode
   :hook
-  (go-mode . enable-tabs)
+  (go-mode . pfif/enable-tabs)
   :general
   (local-leader-def 'go-mode-map
     "e" '(:ignore t :wk "Exec")
