@@ -278,7 +278,8 @@ My team (and Golang) made me
 
 (defun pfif/disable-tabs ()
  (interactive)
- (setq indent-tabs-mode nil))
+ (setq indent-tabs-mode nil)
+ (setq indent-tabs-mode (default-value indent-tabs-mode)))
 (defun pfif/enable-tabs  ()
   (interactive)
   (local-set-key (kbd "TAB") 'tab-to-tab-stop)
@@ -740,6 +741,7 @@ declarations.
                    'file-exists-p
                    '("~/local_tasklist/local_tasklist.org"
                      "~/local_tasklist/local_tasklist_longterm.org"
+                     "~/local_tasklist/bullet_journal.org"
                      "~/Dropbox/ost-tasklist/"
                      ))
  org-agenda-tag-filter-preset '("-archived" "-noagenda")
@@ -749,7 +751,10 @@ declarations.
                                (search category-keep)))
 
 
-(setq org-agenda-custom-commands '(("w" "Florent's Work View"
+(setq org-agenda-custom-commands '(("b" "Bullet Journal" agenda ""
+                                    ((org-agenda-span 1) (org-agenda-tag-filter-preset '("+bulletjournal"))))
+
+                                   ("w" "Florent's Work View"
                                     ((agenda "" ((org-agenda-span 1)))
                                      (tags-todo "longtermtask" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))))
                                      (tags-todo "regulartask"))
@@ -808,6 +813,13 @@ declarations.
         ("i" "Inbox" entry
          (file+headline "local_tasklist.org" "Inbox")
          "* TODO %?")
+        ("b" "Bullet journal")
+        ("bb" "Thought" entry
+         (file "bullet_journal.org")
+         "* %?\n%t")
+        ("bt" "Task" entry
+         (file "bullet_journal.org")
+         "* TODO %?\n%t")
         ("t" "Todo today" entry
          (file+headline "local_tasklist.org" "Short side tasks")
          "* TODO %?\nSCHEDULED: %t")
@@ -887,7 +899,8 @@ Weeks start on Monday, and who thought MDY was a good idea?
     (interactive)
     (let ((persp-reset-windows-on-nil-window-conf t))
       (persp-switch "~/local_tasklist/")
-      (find-file "~/local_tasklist/local_tasklist.org"))
+      (find-file "~/local_tasklist/bullet_journal.org")
+      (org-agenda "" "b"))
     )
 
 (defun pfif/switch-to-local-toolkit ()
@@ -979,13 +992,6 @@ I tend to save huge image in my Zettlekasten that are too big for my screen. Thi
     )
 
   )
-#+end_src
-*** Sparse tree
-:PROPERTIES:
-:ID:       7a6e8632-7967-4b46-9a85-78e67053744d
-:END:
-#+begin_src emacs-lisp :tangle yes
-(setq org-show-context-detail '((default . local)))
 #+end_src
 ** Custom functions
 *** Config
@@ -2145,7 +2151,7 @@ upon termination.
 (use-package literate-calc-mode
   :ensure t)
 #+end_src
-** Fcitx
+** COMMENT Fcitx
 :PROPERTIES:
 :ID:       f5130b4d-5b5a-459b-8941-57d977eb3c98
 :END:
