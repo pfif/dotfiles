@@ -834,13 +834,9 @@ declarations.
         ("zz" "New entry" entry
          (file "~/Dropbox/ost-tasklist/zettlekasten.org")
          "* %^{Entry title} %^G\n%t\n%?\n\nSources:\n-\n\nLinks:\n-")
-        ("c" "Cleaning")
-        ("co" "Cleaning (for others)" entry
-         (file+headline "~/Dropbox/ost-tasklist/cleaning.org" "Cleaning")
-         "* TODO %^{Task}")
-        ("cm" "Cleaning (for myself)" entry
-         (file+headline "~/Dropbox/ost-tasklist/cleaning.org" "Clean for myself")
-         "* TODO %^{Task}")))
+        ("c" "CBT" entry
+         (file "cbt.org")
+         "* %t Situation: %^{Situation}\n** Automatic throughts\n%?\n** Facts that support\n** Facts that do not support\n** Balanced view")))
 #+end_src
 *** Refile
 :PROPERTIES:
