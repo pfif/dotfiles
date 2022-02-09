@@ -751,28 +751,6 @@ declarations.
                                (search category-keep)))
 
 
-(setq org-agenda-custom-commands '(("b" "Bullet Journal" agenda ""
-                                    ((org-agenda-span 1) (org-agenda-tag-filter-preset '("+bulletjournal"))))))
-
-(defun pfif/org-agenda-schedule-today ()
-  (interactive)
-  (org-agenda-schedule nil "+0")
-)
-
-(defun pfif/org-agenda-schedule-morning ()
-  (interactive)
-  (org-agenda-schedule nil "+0 9:30")
-)
-
-(defun pfif/org-agenda-schedule-afternoon ()
-  (interactive)
-  (org-agenda-schedule nil "+0 13:30")
-)
-
-(defun pfif/org-agenda-schedule-tomorrow ()
-  (interactive)
-  (org-agenda-schedule nil "+1") )
-
 (general-define-key
  :keymaps 'org-agenda-mode-map
  :states 'motion
