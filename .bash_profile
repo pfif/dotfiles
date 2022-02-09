@@ -11,10 +11,9 @@ alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
 export PATH="$PATH":"$HOME/.selfcompiledbins"
 
-export GOPATH="$HOME/go-workspace/"
-export PATH=~/go-workspace/bin:$PATH
-
-[ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
+# For this to work, execute pipx install virtualenvwrapper and pipx install virtualenv
+export VIRTUALENVWRAPPER_PYTHON=~/.local/pipx/venvs/virtualenvwrapper/bin/python
+[ -f ~/.local/pipx/venvs/virtualenvwrapper/bin/virtualenvwrapper.sh ] && source ~/.local/pipx/venvs/virtualenvwrapper/bin/virtualenvwrapper.sh
 
 if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
