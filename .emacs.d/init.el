@@ -42,6 +42,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(straight-use-package 'org)
+
 ;; Eval the actual config
 (require 'org-install)
 (require 'ob-tangle)
