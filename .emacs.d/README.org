@@ -483,7 +483,7 @@ declarations.
   (general-create-definer leader-def
     :prefix leader-key
     :keymaps 'override
-    :states '(normal visual))
+    :states '(normal visual motion))
   (defconst local-leader-key ",")
   (general-create-definer local-leader-def
     :prefix local-leader-key
@@ -630,7 +630,6 @@ declarations.
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
-  (evil-define-key 'motion org-agenda-mode-map (kbd "SPC") 'counsel-M-x)
   :hook ((org-mode . evil-org-mode)))
 
 (use-package evil-search-highlight-persist
@@ -736,72 +735,46 @@ declarations.
 :END:
 #+begin_src emacs-lisp :tangle yes
 (require 'seq)
+(use-package org-super-agenda
+  :init
+  (org-super-agenda-mode)
+  :config
+  (setq org-super-agenda-groups '((:name "Tasks"
+                                         :todo t
+                                         :tag "bulletjournal")
+                                  (:name "Ranting"
+                                        :tag "ranting")
+                                  (:name "Thoughts"
+                                         :not (:todo t)
+                                         :tag "bulletjournal")))
+  ;; Remap org-super-agenda-header-map to 'org-agenda-mode-map, so that it takes the modification from evil-org
+  (setq org-super-agenda-header-map 'org-agenda-mode-map)
+)
 (setq
  org-agenda-files (seq-filter
                    'file-exists-p
-                   '("~/local_tasklist/local_tasklist.org"
-                     "~/local_tasklist/local_tasklist_longterm.org"
-                     "~/local_tasklist/bullet_journal.org"
+                   '("~/local_tasklist/bullet_journal.org"
+                     "~/local_tasklist/ranting.org"
                      "~/Dropbox/ost-tasklist/"
                      ))
- org-agenda-tag-filter-preset '("-archived" "-noagenda")
  org-agenda-sorting-strategy '((agenda habit-down time-up scheduled-up priority-down category-keep)
                                (todo priority-down category-keep)
                                (tags priority-down category-keep)
                                (search category-keep)))
 
 
-(setq org-agenda-custom-commands '(("b" "Bullet Journal" agenda ""
-                                    ((org-agenda-span 1) (org-agenda-tag-filter-preset '("+bulletjournal"))))
+(setq org-agenda-custom-commands '(("b" "Bullet Journal"
+                                    agenda "" ((org-agenda-span 1)))))
 
-                                   ("w" "Florent's Work View"
-                                    ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "longtermtask" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))))
-                                     (tags-todo "regulartask"))
-                                    ((org-agenda-tag-filter-preset '("+work"))))
 
-                                   ("j" "Japanese todo"
-                                    agenda
-                                    ""
-                                    ((org-agenda-span 1)
-                                     (org-agenda-tag-filter-preset '("+japanese_daily_todo"))))
-
-                                   ("c" "Cleaning"
-                                    ((agenda "" ((org-agenda-span 1)))
-                                     (tags-todo "cleaningforothers" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))))
-                                     (tags-todo "cleaningformyself" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline)))))
-                                    ((org-agenda-tag-filter-preset '("+cleaning"))
-                                     (org-deadline-warning-days 31)))
-                                   ))
-
-(defun pfif/org-agenda-schedule-today ()
-  (interactive)
-  (org-agenda-schedule nil "+0")
-)
-
-(defun pfif/org-agenda-schedule-morning ()
-  (interactive)
-  (org-agenda-schedule nil "+0 9:30")
-)
-
-(defun pfif/org-agenda-schedule-afternoon ()
-  (interactive)
-  (org-agenda-schedule nil "+0 13:30")
-)
-
-(defun pfif/org-agenda-schedule-tomorrow ()
-  (interactive)
-  (org-agenda-schedule nil "+1") )
-
+;; A macro to insert timestamps
+(fset 'pfif/insert-timestamps
+   (kmacro-lambda-form [tab ?$ ?a return ?\C-c ?. return escape ?\s-2] 0 "%d"))
 (general-define-key
  :keymaps 'org-agenda-mode-map
  :states 'motion
- "m" 'pfif/org-agenda-schedule-today
- "c" 'pfif/org-agenda-schedule-tomorrow
- "y" 'pfif/org-agenda-schedule-morning
- "w" 'pfif/org-agenda-schedule-afternoon
- )
-
+ "m" 'pfif/insert-timestamps
+)
 #+end_src
 *** Capture
 :PROPERTIES:
@@ -810,9 +783,6 @@ declarations.
 #+begin_src emacs-lisp :tangle yes
 (setq org-capture-templates
       '(
-        ("i" "Inbox" entry
-         (file+headline "local_tasklist.org" "Inbox")
-         "* TODO %?")
         ("b" "Bullet journal")
         ("bb" "Thought" entry
          (file "bullet_journal.org")
@@ -820,16 +790,9 @@ declarations.
         ("bt" "Task" entry
          (file "bullet_journal.org")
          "* TODO %?\n%t")
-        ("t" "Todo today" entry
-         (file+headline "local_tasklist.org" "Short side tasks")
-         "* TODO %?\nSCHEDULED: %t")
-        ("w" "Work items")
-        ("ww" "Work item" entry
-         (file+headline "local_tasklist_longterm.org" "Long term tasks")
-         "* TODO %^{Ticket title}\n %^{Ticket URL}")
-        ("wm" "Maintenance work item" entry
-         (file+headline "local_tasklist_longterm.org" "Long term tasks (maintenance)")
-         "* TODO %^{Ticket title}\n %^{Ticket URL}")
+        ("br" "Ranting" entry
+         (file "ranting.org")
+         "* %?\n%t")
         ("z" "Zettlekasten")
         ("zz" "New entry" entry
          (file "~/Dropbox/ost-tasklist/zettlekasten.org")
