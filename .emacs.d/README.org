@@ -747,6 +747,8 @@ declarations.
                                   (:name "Thoughts"
                                          :not (:todo t)
                                          :tag "bulletjournal")))
+  ;; Remap org-super-agenda-header-map to 'org-agenda-mode-map, so that it takes the modification from evil-org
+  (setq org-super-agenda-header-map 'org-agenda-mode-map)
 )
 (setq
  org-agenda-files (seq-filter
