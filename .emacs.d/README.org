@@ -736,19 +736,34 @@ declarations.
 :END:
 #+begin_src emacs-lisp :tangle yes
 (require 'seq)
+(use-package org-super-agenda
+  :init
+  (org-super-agenda-mode)
+  :config
+  (setq org-super-agenda-groups '((:name "Tasks"
+                                         :todo t
+                                         :tag "bulletjournal")
+                                  (:name "Ranting"
+                                        :tag "ranting")
+                                  (:name "Thoughts"
+                                         :not (:todo t)
+                                         :tag "bulletjournal")))
+)
 (setq
  org-agenda-files (seq-filter
                    'file-exists-p
-                   '("~/local_tasklist/local_tasklist.org"
-                     "~/local_tasklist/local_tasklist_longterm.org"
-                     "~/local_tasklist/bullet_journal.org"
+                   '("~/local_tasklist/bullet_journal.org"
+                     "~/local_tasklist/ranting.org"
                      "~/Dropbox/ost-tasklist/"
                      ))
- org-agenda-tag-filter-preset '("-archived" "-noagenda")
  org-agenda-sorting-strategy '((agenda habit-down time-up scheduled-up priority-down category-keep)
                                (todo priority-down category-keep)
                                (tags priority-down category-keep)
                                (search category-keep)))
+
+
+(setq org-agenda-custom-commands '(("b" "Bullet Journal"
+                                    agenda "" ((org-agenda-span 1)))))
 #+end_src
 *** Capture
 :PROPERTIES:
@@ -764,6 +779,9 @@ declarations.
         ("bt" "Task" entry
          (file "bullet_journal.org")
          "* TODO %?\n%t")
+        ("br" "Ranting" entry
+         (file "ranting.org")
+         "* %?\n%t")
         ("t" "Todo today" entry
          (file+headline "local_tasklist.org" "Short side tasks")
          "* TODO %?\nSCHEDULED: %t")
