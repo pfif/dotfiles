@@ -782,9 +782,6 @@ declarations.
         ("br" "Ranting" entry
          (file "ranting.org")
          "* %?\n%t")
-        ("t" "Todo today" entry
-         (file+headline "local_tasklist.org" "Short side tasks")
-         "* TODO %?\nSCHEDULED: %t")
         ("z" "Zettlekasten")
         ("zz" "New entry" entry
          (file "~/Dropbox/ost-tasklist/zettlekasten.org")
