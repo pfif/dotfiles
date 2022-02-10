@@ -763,6 +763,16 @@ declarations.
 
 (setq org-agenda-custom-commands '(("b" "Bullet Journal"
                                     agenda "" ((org-agenda-span 1)))))
+
+
+;; A macro to insert timestamps
+(fset 'pfif/insert-timestamps
+   (kmacro-lambda-form [tab ?$ ?a return ?\C-c ?. return escape ?\s-2] 0 "%d"))
+(general-define-key
+ :keymaps 'org-agenda-mode-map
+ :states 'motion
+ "m" 'pfif/insert-timestamps
+)
 #+end_src
 *** Capture
 :PROPERTIES:
