@@ -483,7 +483,7 @@ declarations.
   (general-create-definer leader-def
     :prefix leader-key
     :keymaps 'override
-    :states '(normal visual))
+    :states '(normal visual motion))
   (defconst local-leader-key ",")
   (general-create-definer local-leader-def
     :prefix local-leader-key
@@ -630,7 +630,6 @@ declarations.
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
-  (evil-define-key 'motion org-agenda-mode-map (kbd "SPC") 'counsel-M-x)
   :hook ((org-mode . evil-org-mode)))
 
 (use-package evil-search-highlight-persist
