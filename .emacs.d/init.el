@@ -1,5 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-
 ;; Startup time optimisations stolen from doom-emacs (including the lexical
 ;; binding bit above)
 ;; Prevent GC during launch

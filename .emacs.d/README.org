@@ -735,6 +735,8 @@ declarations.
 :END:
 #+begin_src emacs-lisp :tangle yes
 (require 'seq)
+(require 'evil)
+(require 'org)
 (use-package org-super-agenda
   :init
   (org-super-agenda-mode)
@@ -770,9 +772,9 @@ declarations.
 ;; A macro to insert timestamps
 (fset 'pfif/insert-timestamps
    (kmacro-lambda-form [tab ?$ ?a return ?\C-c ?. return escape ?\s-2] 0 "%d"))
-(general-define-key
- :keymaps 'org-agenda-mode-map
- :states 'motion
+(evil-define-key
+ 'motion
+ 'org-agenda-mode-map
  "m" 'pfif/insert-timestamps
 )
 #+end_src
@@ -2132,4 +2134,5 @@ upon termination.
 (use-package undo-fu
   :config
   (setq evil-undo-system 'undo-fu))
+
 #+end_src
