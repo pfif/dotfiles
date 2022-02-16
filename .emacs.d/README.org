@@ -562,7 +562,9 @@ declarations.
     "l v" 'pfif/org-attach-vlc-screencap
     "r" '(org-refile :wk "org-refile")
     "s" 'org-schedule
-    "S" 'org-babel-switch-to-session)
+    "S" 'org-babel-switch-to-session
+    "c" 'org-clock-update-time-maybe
+    )
   ;; Dired
   (general-define-key
    :keymaps 'dired-mode-map
@@ -742,13 +744,13 @@ declarations.
   (org-super-agenda-mode)
   :config
   (setq org-super-agenda-groups '((:name "Tasks"
-                                         :todo t
-                                         :tag "bulletjournal")
+                                         :and (:todo t
+                                         :tag "bulletjournal"))
                                   (:name "Ranting"
                                         :tag "ranting")
                                   (:name "Thoughts"
-                                         :not (:todo t)
-                                         :tag "bulletjournal")))
+                                         :and (:not (:todo t)
+                                         :tag "bulletjournal"))))
   ;; Remap org-super-agenda-header-map to 'org-agenda-mode-map, so that it takes the modification from evil-org
   (setq org-super-agenda-header-map 'org-agenda-mode-map)
 )
@@ -772,10 +774,16 @@ declarations.
 ;; A macro to insert timestamps
 (fset 'pfif/insert-timestamps
    (kmacro-lambda-form [tab ?$ ?a return ?\C-c ?. return escape ?\s-2] 0 "%d"))
+
+(defun pfif/org-agenda-schedule-today ()
+  (interactive)
+  (org-agenda-schedule nil "+0")
+  )
 (evil-define-key
  'motion
  'org-agenda-mode-map
  "m" 'pfif/insert-timestamps
+ "v" 'pfif/org-agenda-schedule-today
 )
 #+end_src
 *** Capture
@@ -786,7 +794,7 @@ declarations.
 (setq org-capture-templates
       '(
         ("b" "Bullet journal")
-        ("bb" "Thought" entry
+        ("bs" "思考" entry
          (file "bullet_journal.org")
          "* %?\n%t")
         ("bt" "Task" entry
@@ -1453,7 +1461,8 @@ I only enable this every now and then.
     (let* ((url (read-from-minibuffer "URL:"))
            (name (car (last (split-string url "/"))))
            (directory (concat "~/Documents/company_projects/" name)))
-      (shell-command (concat "git clone " url " " directory))))
+      (magit-clone-shallow url directory '() 1))
+    (pfif/add-known-projects-in-default-directories))
   :general
   (leader-def
     "p r" 'sulami/projectile-replace
