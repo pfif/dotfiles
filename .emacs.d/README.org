@@ -1461,7 +1461,7 @@ I only enable this every now and then.
     (let* ((url (read-from-minibuffer "URL:"))
            (name (car (last (split-string url "/"))))
            (directory (concat "~/Documents/company_projects/" name)))
-      (magit-clone-shallow url directory '() 1))
+      (magit-clone-regular url directory '() 1))
     (pfif/add-known-projects-in-default-directories))
   :general
   (leader-def
