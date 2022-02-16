@@ -1461,7 +1461,7 @@ I only enable this every now and then.
     (let* ((url (read-from-minibuffer "URL:"))
            (name (car (last (split-string url "/"))))
            (directory (concat "~/Documents/company_projects/" name)))
-      (magit-clone-regular url directory '() 1))
+      (magit-clone-regular url directory '()))
     (pfif/add-known-projects-in-default-directories))
   :general
   (leader-def
@@ -2143,5 +2143,4 @@ upon termination.
 (use-package undo-fu
   :config
   (setq evil-undo-system 'undo-fu))
-
 #+end_src
