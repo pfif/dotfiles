@@ -768,23 +768,24 @@ declarations.
 
 
 (setq org-agenda-custom-commands '(("b" "Bullet Journal"
-                                    agenda "" ((org-agenda-span 1)))))
+                                    ((agenda "" ((org-agenda-span 1)))
+                                     (tags-todo "jason11")))))
 
 
 ;; A macro to insert timestamps
 (fset 'pfif/insert-timestamps
-   (kmacro-lambda-form [tab ?$ ?a return ?\C-c ?. return escape ?\s-2] 0 "%d"))
+      (kmacro-lambda-form [tab ?j ?$ ?a return ?\C-c ?. return escape ?\s-2] 0 "%d"))
 
 (defun pfif/org-agenda-schedule-today ()
   (interactive)
   (org-agenda-schedule nil "+0")
   )
 (evil-define-key
- 'motion
- 'org-agenda-mode-map
- "m" 'pfif/insert-timestamps
- "v" 'pfif/org-agenda-schedule-today
-)
+  'motion
+  'org-agenda-mode-map
+  "m" 'pfif/insert-timestamps
+  "v" 'pfif/org-agenda-schedule-today
+  )
 #+end_src
 *** Capture
 :PROPERTIES:
@@ -817,8 +818,8 @@ declarations.
 :END:
 This allows me to refile from the GTD inbox to the top-level of a file.
 #+begin_src emacs-lisp :tangle yes
-(setq org-refile-targets '((org-agenda-files :tag . "n0nexistent"))
-      org-refile-use-outline-path 'file)
+(setq org-refile-targets '(("~/local_tasklist/bullet_journal.org" :todo . "TODO"))
+      org-refile-use-outline-path nil)
 #+end_src
 *** Open the inbox
 :PROPERTIES:
