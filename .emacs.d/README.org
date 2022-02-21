@@ -780,9 +780,9 @@ declarations.
   (interactive)
   (org-agenda-schedule nil "+0")
   )
-(evil-define-key
-  'motion
-  'org-agenda-mode-map
+(general-define-key
+  :states 'motion
+  :keymaps 'org-agenda-mode-map
   "m" 'pfif/insert-timestamps
   "v" 'pfif/org-agenda-schedule-today
   )
