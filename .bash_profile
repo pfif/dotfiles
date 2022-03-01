@@ -25,3 +25,6 @@ source "$HOME/local_bash_profile.sh"
 
 # Never overwrite script files
 alias script="script -a"
+
+# For Binary installed with go installed
+PATH="$PATH":$(go env GOPATH)"/bin"
