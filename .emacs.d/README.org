@@ -1964,7 +1964,6 @@ Place point on the outer-most opening parenthesis to start:
 ** Javascript / typescript
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.tsx?$" . js-mode))
-(add-hook 'js-mode-hook 'pfif/enable-tabs)
 #+end_src
 ** Golang
 :PROPERTIES:
