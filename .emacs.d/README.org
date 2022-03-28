@@ -564,6 +564,7 @@ declarations.
     "s" 'org-schedule
     "S" 'org-babel-switch-to-session
     "c" 'org-clock-update-time-maybe
+    "C" 'org-clock-report
     )
   ;; Dired
   (general-define-key
