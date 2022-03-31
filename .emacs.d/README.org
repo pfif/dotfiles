@@ -822,7 +822,10 @@ declarations.
 :END:
 This allows me to refile from the GTD inbox to the top-level of a file.
 #+begin_src emacs-lisp :tangle yes
-(setq org-refile-targets '(("~/local_tasklist/bullet_journal.org" :todo . "TODO"))
+(setq org-refile-targets '(
+                           ("~/local_tasklist/bullet_journal.org" :todo . "TODO")
+                           ("~/local_tasklist/bullet_journal.org" :tag . "timetrackingregular")
+                           )
       org-refile-use-outline-path nil)
 #+end_src
 *** Open the inbox
