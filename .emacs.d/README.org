@@ -2151,3 +2151,8 @@ upon termination.
   :config
   (setq evil-undo-system 'undo-fu))
 #+end_src
+** OPA
+#+begin_src emacs-lisp :tangle yes
+(use-package rego-mode
+  :ensure t)
+#+end_src
