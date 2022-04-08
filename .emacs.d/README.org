@@ -550,6 +550,13 @@ declarations.
    "s-=" (lambda () (interactive) (text-scale-increase 0.5))
    "s--" (lambda () (interactive) (text-scale-decrease 0.5))
    "s-0" (lambda () (interactive) (text-scale-increase 0)))
+
+  (defun pfif/org-clock-report ()
+    (interactive)
+    (org-clock-report)
+    (pfif/compute-remaining-time-for-today)
+    )
+
   ;; Org mode
   (local-leader-def
     :keymaps 'org-mode-map
@@ -564,7 +571,7 @@ declarations.
     "s" 'org-schedule
     "S" 'org-babel-switch-to-session
     "c" 'org-clock-update-time-maybe
-    "C" 'org-clock-report
+    "C" 'pfif/org-clock-report
     )
   ;; Dired
   (general-define-key
@@ -969,6 +976,16 @@ I tend to save huge image in my Zettlekasten that are too big for my screen. Thi
     )
 
   )
+#+end_src
+*** Clock
+#+begin_src emacs-lisp :tangle yes
+(defun pfif/compute-remaining-time-for-today ()
+  (interactive)
+  (let* ((today-time (->> (org-clock-get-table-data "" '(:block today))
+                         (nth 1)))
+         (remaining-time (- 390 today-time)))
+    (message (org-duration-from-minutes remaining-time)))
+)
 #+end_src
 ** Custom functions
 *** Config
