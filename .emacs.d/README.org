@@ -793,7 +793,7 @@ declarations.
 
 (setq org-agenda-custom-commands '(("b" "Bullet Journal"
                                     ((agenda "" ((org-agenda-span 1)))
-                                     (tags "timetrackingregular")
+                                     (search "timetrackingregular")
                                      (tags-todo "jason11")
                                      ))))
 
