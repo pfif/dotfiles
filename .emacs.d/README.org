@@ -2173,3 +2173,8 @@ upon termination.
 (use-package rego-mode
   :ensure t)
 #+end_src
+** Mermaid
+#+begin_src emacs-lisp :tangle yes
+(use-package mermaid-mode
+  :ensure t)
+#+end_src
