@@ -985,7 +985,7 @@ I tend to save huge image in my Zettlekasten that are too big for my screen. Thi
   (interactive)
   (let* ((today-time (->> (org-clock-get-table-data "" '(:block today))
                          (nth 1)))
-         (remaining-time (- 465 today-time)))
+         (remaining-time (- 480 today-time)))
     (message (org-duration-from-minutes remaining-time)))
 )
 #+end_src
