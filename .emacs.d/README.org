@@ -589,6 +589,8 @@ declarations.
         evil-want-C-i-jump t
         evil-want-Y-yank-to-eol t
         evil-want-keybinding nil)
+  :custom
+  (evil-undo-system 'undo-fu)
   :config
   ;; This conflicts with the local leader
   (unbind-key "," evil-motion-state-map)
@@ -2162,11 +2164,11 @@ upon termination.
 #+begin_src emacs-lisp :tangle yes
 (use-package fountain-mode)
 #+end_src
-** Undo sytem
+** Undo system
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-fu
-  :config
-  (setq evil-undo-system 'undo-fu))
+  :defer t
+)
 #+end_src
 ** OPA
 #+begin_src emacs-lisp :tangle yes
