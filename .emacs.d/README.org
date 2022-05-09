@@ -823,7 +823,7 @@ declarations.
          "* %^{Entry title} %^G\n%t\n%?\n\nSources:\n-\n\nLinks:\n-")
         ("c" "CBT" entry
          (file "cbt.org")
-         "* %t Situation: %^{Situation}\n** Automatic throughts\n%?\n** Bundle X\n*** Automatic thoughts\n*** Facts that support\n*** Facts that do not support\n*** Balanced view")))
+         "* %t\n** Automatic throughts\nI am afraid that ...%?\nI am unhappy because ...\n** Bundle X\n*** Automatic thoughts\n*** Facts that support\n*** Facts that do not support\n*** Balanced view")))
 #+end_src
 *** Refile
 :PROPERTIES:
