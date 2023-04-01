@@ -823,7 +823,7 @@ declarations.
          "* %^{Entry title} %^G\n%t\n%?\n\nSources:\n-\n\nLinks:\n-")
         ("c" "CBT" entry
          (file "cbt.org")
-         "* %t\n** Automatic throughts\n- I am afraid that ...%?\n- I am unhappy because ...\n** Bundle X\n*** Automatic thoughts\n*** Facts that support\n*** Facts that do not support\n*** Balanced view"
+         "* %t\n** Automatic throughts\n*** TODO I am afraid that ...%?\n*** TODO I am unhappy because ...\n** Bundle X\n*** Automatic thoughts\n*** Facts that support\n*** Facts that do not support\n*** Balanced view"
          :jump-to-captured t
          )))
 #+end_src
@@ -1790,6 +1790,7 @@ This allows me to benchmark Emacs startup.
   (go-mode . lsp)
   (dart-mode . lsp)
   (js-mode . lsp)
+  (rust-mode . lsp)
   )
   :general
   (local-leader-def 'lsp-mode-map
