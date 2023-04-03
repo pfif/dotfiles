@@ -1522,6 +1522,7 @@ I only enable this every now and then.
 (use-package perspective
   :config
   (setq persp-show-modestring nil)
+  (setq persp-suppress-no-prefix-key-warning t)
   :general
   (leader-def
     "p l" 'persp-switch)
