@@ -2183,3 +2183,9 @@ upon termination.
 (use-package mermaid-mode
   :ensure t)
 #+end_src
+
+** vterm
+#+begin_src emacs-lisp :tangle yes
+(use-package vterm
+  :ensure t)
+#+end_src
