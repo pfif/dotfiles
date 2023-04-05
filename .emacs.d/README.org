@@ -2189,4 +2189,13 @@ upon termination.
 #+begin_src emacs-lisp :tangle yes
 (use-package vterm
   :ensure t)
+
+(use-package multi-vterm
+  :ensure t
+  :config
+  (setq vterm-max-scrollback 100000)
+  :general
+  (leader-def
+    "p s" 'multi-vterm-project)
+)
 #+end_src
