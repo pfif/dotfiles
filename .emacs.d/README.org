@@ -382,9 +382,7 @@ List library that comes in handy.
 :END:
 Set the font to Fira Code and enable ligatures.
 #+BEGIN_SRC emacs-lisp :tangle yes
-(let ((font "Fira Code 14"))
-  (set-face-attribute 'default nil :font font)
-  (set-frame-font font nil t))
+(add-to-list 'default-frame-alist '(font . "Fira Code 14"))
 #+END_SRC
 *** Theme
 :PROPERTIES:
