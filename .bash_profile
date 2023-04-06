@@ -12,6 +12,7 @@ alias pgit="GIT_SSH_COMMAND='ssh -i ~/.ssh/id_personal_github_account -o Identit
 
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
 export PATH="$PATH":"$HOME/.selfcompiledbins"
+export EDITOR="emacsclient"
 
 # For this to work, execute pipx install virtualenvwrapper and pipx install virtualenv
 export VIRTUALENVWRAPPER_PYTHON=~/.local/pipx/venvs/virtualenvwrapper/bin/python
