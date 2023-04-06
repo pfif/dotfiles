@@ -1,2 +1,2 @@
 # to be added to the macosx dock
-emacsclient -c
+emacsclient -c -n
