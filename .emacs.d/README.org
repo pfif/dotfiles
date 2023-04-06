@@ -2194,6 +2194,29 @@ upon termination.
   :ensure t
   :config
   (setq vterm-max-scrollback 100000)
+  :config/el-patch
+  (defun multi-vterm-project ()
+  "Create new vterm buffer."
+  (interactive)
+  (if (multi-vterm-project-root)
+      (if (buffer-live-p (get-buffer (multi-vterm-project-get-buffer-name)))
+          (if (string-equal (buffer-name (current-buffer)) (multi-vterm-project-get-buffer-name))
+              (delete-window (selected-window))
+            ((el-patch-swap
+               ;; Originl
+               switch-to-buffer-other-window
+               ;; New
+               switch-to-buffer) (multi-vterm-project-get-buffer-name)))
+        (let* ((vterm-buffer (multi-vterm-get-buffer 'project))
+               (multi-vterm-buffer-list (nconc multi-vterm-buffer-list (list vterm-buffer))))
+          (set-buffer vterm-buffer)
+          (multi-vterm-internal)
+          ((el-patch-swap
+               ;; Originl
+               switch-to-buffer-other-window
+               ;; New
+               switch-to-buffer) vterm-buffer)))
+    (message "This file is not in a project")))
   :general
   (leader-def
     "p s" 'multi-vterm-project)
