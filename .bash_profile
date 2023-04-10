@@ -8,8 +8,7 @@ alias gpf="gp -f"
 
 alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
 
-alias pgit="GIT_SSH_COMMAND='ssh -i ~/.ssh/id_personal_github_account -o IdentitiesOnly=yes' git"
-
+export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_personal_github_account -o IdentitiesOnly=yes'
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
 export PATH="$PATH":"$HOME/.selfcompiledbins"
 export EDITOR="emacsclient"
