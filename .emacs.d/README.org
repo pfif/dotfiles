@@ -542,6 +542,7 @@ declarations.
     "z" (lambda () (interactive)
           (org-id-update-id-locations)
           (find-file "~/Dropbox/ost-tasklist/zettlekasten.org"))
+    "v" 'vterm
     )
   (general-define-key
    "s-m" 'suspend-frame
@@ -1324,8 +1325,6 @@ a symbol and how to search for them."
 :END:
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package yasnippet
-  :config
-  (setq yas-snippet-dirs (add-to-list #'yas-snippet-dirs "/Users/sulami/.emacs/snippets/"))
   :general
   (:keymaps 'yas-minor-mode-map
    "<tab>" nil
