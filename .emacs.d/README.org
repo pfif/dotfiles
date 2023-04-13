@@ -2,6 +2,42 @@
 #+FILETAGS: sideproject yak
 #+CATEGORY: Emacs
 * Emacs
+** Package management
+*** use-package
+:PROPERTIES:
+:ID:       AE1E02B7-5BDD-4AA8-9BB0-EB14DD8A3F10
+:END:
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq straight-use-package-by-default t)
+#+END_SRC
+*** el-patch
+:PROPERTIES:
+:ID:       A1C4B92C-B2DD-488C-B56E-D0B42EE184B5
+:END:
+Allows for patching functions in packages.
+#+begin_src emacs-lisp :tangle yes
+(use-package el-patch)
+#+end_src
+*** Dash
+:PROPERTIES:
+:ID:       B4BFD98E-DB93-42CE-A26D-A9AAE12F5610
+:END:
+List library that comes in handy.
+#+begin_src emacs-lisp :tangle yes
+(use-package dash)
+#+end_src
+*** Updating
+:PROPERTIES:
+:ID:       00B93982-A2E5-4AEA-BEA0-3D0E38F2B443
+:END:
+#+begin_src emacs-lisp :tangle yes
+(defun sulami/update-packages ()
+  "Prunes and updates packages, revalidates patches."
+  (straight-prune-build-directory)
+  (straight-pull-all)
+  (el-patch-validate-all)
+  (straight-freeze-versions))
+#+end_src
 ** Full screen if requested
 When "-fullscreen" is passed as a command line argument to emacs, set
 the frame size and position. Useful when starting emacs without a
@@ -334,46 +370,28 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
 (sanityinc/set-exec-path-from-shell-PATH )
+
+(defun pfif/set_environment_variables_from_shell ()
+  (let ((environment-variables (--> (shell-command-to-string "$SHELL --login -i -c 'env'")
+                                    (split-string it "\n")
+                                    (-filter (lambda (str) (string-match "=" str)) it) ;; weak attempt at weeding out stuff in stdin before the actual env output
+                                    (-filter (lambda (str) (not (string-equal "" str))) it)
+                                    (-map (lambda (str)
+                                            (let ((equal-position (string-match "=" str)))
+                                              (cons
+                                               (substring str 0 equal-position)
+                                               (substring str (+ equal-position 1)))))
+                                          it)
+                                    )))
+    (-each environment-variables (lambda (env_tuple)
+                                   (setenv (car env_tuple) (cdr env_tuple))))))
+
+(pfif/set_environment_variables_from_shell)
+
 #+end_src
 *** Allowing british keyboard to input #
 #+begin_src emacs-lisp :tangle yes
 (setq ns-right-alternate-modifier 'none)
-#+end_src
-** Package management
-*** use-package
-:PROPERTIES:
-:ID:       AE1E02B7-5BDD-4AA8-9BB0-EB14DD8A3F10
-:END:
-#+BEGIN_SRC emacs-lisp :tangle yes
-(setq straight-use-package-by-default t)
-#+END_SRC
-*** el-patch
-:PROPERTIES:
-:ID:       A1C4B92C-B2DD-488C-B56E-D0B42EE184B5
-:END:
-Allows for patching functions in packages.
-#+begin_src emacs-lisp :tangle yes
-(use-package el-patch)
-#+end_src
-*** Dash
-:PROPERTIES:
-:ID:       B4BFD98E-DB93-42CE-A26D-A9AAE12F5610
-:END:
-List library that comes in handy.
-#+begin_src emacs-lisp :tangle yes
-(use-package dash)
-#+end_src
-*** Updating
-:PROPERTIES:
-:ID:       00B93982-A2E5-4AEA-BEA0-3D0E38F2B443
-:END:
-#+begin_src emacs-lisp :tangle yes
-(defun sulami/update-packages ()
-  "Prunes and updates packages, revalidates patches."
-  (straight-prune-build-directory)
-  (straight-pull-all)
-  (el-patch-validate-all)
-  (straight-freeze-versions))
 #+end_src
 ** Appearance
 *** Font
