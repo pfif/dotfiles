@@ -2237,3 +2237,22 @@ upon termination.
     "p s" 'multi-vterm-project)
 )
 #+end_src
+
+** ChatGPT
+The robots have come. All hail the robots.
+#+begin_src emacs-lisp :tangle yes
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t
+  :custom
+  (copilot-idle-delay 1)
+  :general
+  (general-imap
+    :keymaps 'copilot-mode-map
+    "C-j" #'copilot-complete
+    "C-<return>" #'copilot-accept-completion
+    "C-k" #'copilot-previous-completion
+    "C-l" #'copilot-next-completion)
+  :hook
+  (prog-mode . copilot-mode))
+#+end_src
