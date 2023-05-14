@@ -1,3 +1,6 @@
+[Unit]
+Description=Emacs server
+
 [Service]
 Type=simple
 Restart=always
