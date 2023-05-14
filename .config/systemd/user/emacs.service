@@ -1,0 +1,4 @@
+[Service]
+Type=simple
+Restart=always
+ExecStart=emacs --fg-daemon
