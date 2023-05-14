@@ -2252,7 +2252,5 @@ The robots have come. All hail the robots.
     "C-j" #'copilot-complete
     "C-<return>" #'copilot-accept-completion
     "C-k" #'copilot-previous-completion
-    "C-l" #'copilot-next-completion)
-  :hook
-  (prog-mode . copilot-mode))
+    "C-l" #'copilot-next-completion))
 #+end_src
