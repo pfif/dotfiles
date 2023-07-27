@@ -1842,7 +1842,7 @@ This allows me to benchmark Emacs startup.
 
 (use-package lsp-ui)
 (use-package lsp-ivy)
-(use-package lsp-treemacs)
+;; (use-package lsp-treemacs)
 #+END_SRC
 ** Clojure
 :PROPERTIES:
