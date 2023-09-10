@@ -2254,3 +2254,15 @@ The robots have come. All hail the robots.
     "C-k" #'copilot-previous-completion
     "C-l" #'copilot-next-completion))
 #+end_src
+
+** Writeroom
+#+begin_src emacs-lisp :tangle yes
+(use-package writeroom-mode)
+
+(defun pfif/enter-writing-room ()
+  (interactive)
+  (writeroom-mode)
+  (visual-line-mode)
+  (setq truncate-lines nil)
+)
+#+end_src
