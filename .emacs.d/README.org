@@ -366,9 +366,19 @@ Especially Alfred likes to paste with ~⌘-v~, so that needs to work.
 
 This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
   (interactive)
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (car (last (split-string (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'") "\n" t))))))
+  (let ((path-from-shell (car (split-string
+                               (replace-regexp-in-string "[ \t\n]*$" ""
+                                                         (car
+                                                          (-filter
+                                                           (lambda (x) (string-search "TISWHATIBELOOKINGFOR:" x))
+                                                           (split-string
+                                                            (shell-command-to-string "$SHELL --login -i -c 'echo \"TISWHATIBELOOKINGFOR: $PATH\"'") "\n" t))))
+                               "TISWHATIBELOOKINGFOR: " t
+                               ))))
+    (message path-from-shell)
     (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
+    (setq exec-path (split-string path-from-shell path-separator))
+    ))
 (sanityinc/set-exec-path-from-shell-PATH )
 
 (defun pfif/set_environment_variables_from_shell ()
@@ -652,7 +662,8 @@ declarations.
   :config
   (setq evil-collection-mode-list
         (delete 'company evil-collection-mode-list))
-  (evil-collection-init))
+  (evil-collection-init)
+  )
 
 (use-package evil-org
   :after org
@@ -1831,7 +1842,7 @@ This allows me to benchmark Emacs startup.
 
 (use-package lsp-ui)
 (use-package lsp-ivy)
-(use-package lsp-treemacs)
+;; (use-package lsp-treemacs)
 #+END_SRC
 ** Clojure
 :PROPERTIES:
@@ -1986,14 +1997,26 @@ Place point on the outer-most opening parenthesis to start:
   (add-hook 'pyvenv-post-deactivate-hooks 'pfif/pyvenv-workon)
   (elpy-shell-toggle-dedicated-shell 1)
 
+  (defun pfif/activate-poetry-env ()
+    (interactive)
+    (let ((venv-path (shell-command-to-string "poetry env info -p")))
+      (message "Activating poetry venv: %s" venv-path)
+      (pyvenv-activate venv-path)
+      )
+    )
+
   :general
   (local-leader-def
     :keymaps 'python-mode-map
     "t" '(:ignore t :wk "test")
     "t t" 'elpy-test
     "t a" 'pfif/run-all-tests-elpy
+    "j" '(:ignore t :wk "jump")
+    "j k" 'elpy-goto-definition
     "v" '(:ignore t :wk "virtual environment")
     "v w" 'pyvenv-workon
+    "v p" 'pfif/activate-poetry-env
+    "v d" 'pyvenv-deactivate
     "s" '(:ignore t :wk "Shell")
     "s r" 'elpy-shell-switch-to-shell
     "s k" 'elpy-shell-kill
@@ -2001,7 +2024,7 @@ Place point on the outer-most opening parenthesis to start:
     "r b" 'elpy-shell-send-region-or-buffer
     "d" '(:ignore t :wk "Docs")
     "d d" 'elpy-doc
-))
+    ))
 #+end_src
 ** Javascript / typescript
 #+begin_src emacs-lisp :tangle yes
