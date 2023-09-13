@@ -604,6 +604,12 @@ declarations.
   (general-define-key
    :keymaps 'dired-mode-map
    "<return>" 'dired-find-alternate-file))
+
+;; Often used emojis
+(general-define-key
+ :keymaps 'override
+ "C-s" (lambda () (interactive)
+        (insert "✅")))
 #+END_SRC
 ** Evil
 :PROPERTIES:
