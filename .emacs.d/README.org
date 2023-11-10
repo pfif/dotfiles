@@ -1541,31 +1541,12 @@ I only enable this every now and then.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package perspective
   :config
-  (setq persp-show-modestring nil)
   (setq persp-suppress-no-prefix-key-warning t)
   :general
   (leader-def
-    "p l" 'persp-switch)
+    "p p" 'persp-switch
+    "p l" 'persp-buffer-menu)
   :hook (after-init . persp-mode))
-
-(use-package persp-projectile
-  :defer t
-  :after (perspective)
-  :init
-  (defun sulami/kill-project-perspective ()
-    "Kills the current project and then the perspective."
-    (interactive)
-    (when (projectile-project-p)
-      (projectile-kill-buffers))
-    (let ((pname (persp-name (persp-curr))))
-      (when (and (not (eq "main" pname))
-                 (yes-or-no-p (format "Kill perspective %s?"pname)))
-        (persp-kill pname)
-        (message "Killed perspective %s" pname))))
-  :general
-  (leader-def
-    "p p" 'projectile-persp-switch-project
-    "p k" 'sulami/kill-project-perspective))
 #+END_SRC
 ** Winum
 :PROPERTIES:
