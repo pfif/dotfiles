@@ -1486,17 +1486,6 @@ I only enable this every now and then.
     (dired-unmark-all-marks)
     (kill-buffer))
 
-  (defun sulami/toggle-project-root-shell ()
-    "Opens eshell, if possible in the project root."
-    (interactive)
-    (if (eq major-mode 'eshell-mode)
-        (evil-switch-to-windows-last-buffer)
-      (if (projectile-project-p)
-          (let* ((eshell-buffer-name (concat "*eshell-" (projectile-project-name) "*")))
-            (projectile-with-default-dir (projectile-project-root)
-              (eshell)))
-        (eshell))))
-
   ;; Don't do projectile stuff on remote files
   ;; from https://github.com/syl20bnr/spacemacs/issues/11381#issuecomment-481239700
   (defadvice projectile-project-root (around ignore-remote first activate)
@@ -1528,7 +1517,6 @@ I only enable this every now and then.
   (leader-def
     "p r" 'sulami/projectile-replace
     "p d" 'projectile-dired)
-  ("s-'" 'sulami/toggle-project-root-shell)
   :hook (after-init . projectile-global-mode))
 
 (use-package counsel-projectile
