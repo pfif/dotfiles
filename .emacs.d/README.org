@@ -305,6 +305,10 @@ Use ~aspell~ with British English.
 #+begin_src emacs-lisp :tangle yes
 (setq tab-width 2)
 #+end_src
+*** Disable async compilation warning
+#+begin_src emacs-lisp :tangle yes
+(setq native-comp-async-report-warnings-errors nil)
+#+end_src
 ** Tabs
 My team (and Golang) made me
 
