@@ -17,9 +17,9 @@ export EDITOR="emacsclient"
 export VIRTUALENVWRAPPER_PYTHON=~/.local/pipx/venvs/virtualenvwrapper/bin/python
 [ -f ~/.local/pipx/venvs/virtualenvwrapper/bin/virtualenvwrapper.sh ] && source ~/.local/pipx/venvs/virtualenvwrapper/bin/virtualenvwrapper.sh
 
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
+export RUSTUP_HOME=~/.selfcompiledbins/rustup
+export CARGO_HOME=~/.selfcompiledbins/cargo
+export PATH="$PATH":"~/.selfcompiledbins/cargo/bin"
 
 source "$HOME/local_bash_profile.sh"
 
