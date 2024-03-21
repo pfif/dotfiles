@@ -1516,7 +1516,8 @@ I only enable this every now and then.
   :general
   (leader-def
     "p r" 'sulami/projectile-replace
-    "p d" 'projectile-dired)
+    "p d" 'projectile-dired
+    "p o" 'projectile-switch-project)
   :hook (after-init . projectile-global-mode))
 
 (use-package counsel-projectile
@@ -2236,7 +2237,7 @@ upon termination.
 )
 #+end_src
 
-** ChatGPT
+** COMMENT ChatGPT
 The robots have come. All hail the robots.
 #+begin_src emacs-lisp :tangle yes
 (use-package copilot
@@ -2252,6 +2253,18 @@ The robots have come. All hail the robots.
     "C-k" #'copilot-previous-completion
     "C-l" #'copilot-next-completion))
 #+end_src
+
+** Ellama
+#+begin_src emacs-lisp :tangle yes
+(use-package ellama
+  :straight (:host github :repo "s-kostyaev/ellama" :files ("*.el"))
+  :init
+  (require 'llm-ollama)
+  (setq ellama-provider
+		  (make-llm-ollama
+		   :chat-model "mistral:latest" :embedding-model "mistral:latest")))
+#+end_src
+
 
 ** Writeroom
 #+begin_src emacs-lisp :tangle yes
