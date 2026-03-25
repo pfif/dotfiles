@@ -8,6 +8,8 @@ alias gpf="gp -f"
 
 alias ftn="cd ~/workspace/marvelscript/ && screen -c ~/.screen_envs/fountain"
 
+alias git-worktree="WORKTREE_DIR=$(mktemp -d) && git stash && git worktree add $WORKTREE_DIR && git stash apply && pushd $WORKTREE_DIR && git stash apply && popd && echo $WORKTREE_DIR"
+
 export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_personal_github_account -o IdentitiesOnly=yes'
 export PS1="\[\e[32m\]\A\[\e[m\] \w \\$ "
 export PATH="$PATH":"$HOME/.selfcompiledbins"
@@ -28,3 +30,4 @@ alias script="script -a"
 
 # For Binary installed with go installed
 PATH="$PATH":$(go env GOPATH)"/bin"
+. "/Users/florentpastor/.selfcompiledbins/cargo/env"
